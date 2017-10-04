@@ -3,6 +3,3 @@ Hello world!
 
 Commit and Push
 
-#2
-
-#3
