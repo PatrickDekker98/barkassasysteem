@@ -1,24 +1,27 @@
 import sqlite3
 
-def product_toevoegen(naam, startdatum, prijs, einddatum=None):
-    cursor.execute('''SELECT * FROM Product''')
+def addProduct(name, startdate, price, enddate=None):
+    'Takes a name, startdate, price and optionally an enddate. This function creates the new product and prices it.'
+    cursor.execute('''SELECT * FROM product''')
     id = cursor.lastrowid + 1
-    cursor.execute(''' INSERT INTO Product(productid,productnaam) VALUES(?,?)''', [id, naam])
-    cursor.execute(''' INSERT INTO Prijs(Product_productid, datumStart, waarde) VALUES(?,?,?)''', [id, startdatum,prijs])
-    if einddatum != None:
-        cursor.execute('''UPDATE users SET datumEind = ? WHERE productid = ?''', [einddatum, id])
+    cursor.execute(''' INSERT INTO product(productId,name,datetimeStart) VALUES(?,?,?)''', [id, name, startdate])
+    cursor.execute(''' INSERT INTO price(productId, datetimeStart, value) VALUES(?,?,?)''', [id, startdate,price])
+    if enddate != None: # If Enddate was specified, add Enddate to database
+        cursor.execute('''UPDATE product SET datetimeEnd = ? WHERE productId = ?''', [enddate, id])
+        cursor.execute('''UPDATE price SET datetimeEnd = ? WHERE productId = ?''', [enddate, id])
     db.commit()
 
-def product_deactiveren(naam, einddatum):
-    cursor.execute('''SELECT productid FROM Product WHERE productnaam = ?''', [naam])
+def deactivateProduct(naam, enddate):
+    'Takes a name and a date. This function deactivates the '
+    cursor.execute('''SELECT productid FROM Product WHERE name = ?''', [naam])
     id = cursor.fetchone()[0]
-    cursor.execute('''UPDATE Prijs SET datumEind = ? WHERE Product_productid = ?''', (einddatum, id))
+    cursor.execute('''UPDATE Price SET datetimeEnd = ? WHERE productId = ?''', (enddate, id))
     db.commit()
 
-def prijzen_aanpassen(naam, nieuwePrijs):
-    cursor.execute('''SELECT productid FROM Product WHERE productnaam = ?''', [naam])
+def alterPrice(name, newprice):
+    cursor.execute('''SELECT productId FROM product WHERE name = ?''', [name])
     id = cursor.fetchone()[0]
-    cursor.execute(''' UPDATE Prijs SET waarde = ? WHERE Product_productid = ?''', (nieuwePrijs, id))
+    cursor.execute(''' UPDATE price SET value = ? WHERE productId = ?''', (newprice, id))
     db.commit()
 
 #Tijdelijke database in geheugen aanmaken
@@ -26,17 +29,17 @@ db = sqlite3.connect(':memory:')
 cursor = db.cursor()
 
 #Database tabellen maken
-cursor.execute('''CREATE TABLE Product(productid INTEGER PRIMARY KEY, productnaam TEXT)''')
-cursor.execute('''CREATE TABLE Prijs(Product_productid INTEGER , datumStart DATETIME, datumEind DATETIME, waarde DECIMAL, FOREIGN KEY(Product_productid) REFERENCES Procuct(productid), PRIMARY KEY (Product_productid, datumStart))''')
+cursor.execute('''CREATE TABLE product(productId INTEGER PRIMARY KEY, name TEXT, datetimeStart DATETIME, datetimeEnd DATETIME)''')
+cursor.execute('''CREATE TABLE price(productId INTEGER , datetimeStart DATETIME, datetimeEnd DATETIME, value DECIMAL, FOREIGN KEY(productId) REFERENCES product(productId), PRIMARY KEY (productId, datetimeStart))''')
 db.commit()
 
 #Dummy data invoeren
-product_toevoegen(naam='Bier', startdatum='04-10-2017', prijs=1.20)
-product_toevoegen(naam='Cola', startdatum='05-10-2017', prijs=1.00)
-product_toevoegen(naam='Fanta', startdatum='04-10-2017', prijs=1.20)
-product_toevoegen(naam='7-up', startdatum='05-10-2017', prijs=1.00)
-product_deactiveren('Bier', '20-10-2017')
-prijzen_aanpassen('Cola', 1.95)
+addProduct(name='Bier', startdate='04-10-2017', price=1.20)
+addProduct(name='Cola', startdate='05-10-2017', price=1.00)
+addProduct(name='Fanta', startdate='04-10-2017', price=1.20)
+addProduct(name='7-up', startdate='05-10-2017', price=1.00)
+deactivateProduct('Bier', '20-10-2017')
+alterPrice('Cola', 1.95)
 
 #cursor.execute('''SELECT * FROM Product''')
 #for row in cursor:
@@ -46,8 +49,9 @@ prijzen_aanpassen('Cola', 1.95)
 #for row in cursor:
 #    print(row)
 
-cursor.execute('''SELECT productnaam, waarde, datumStart, datumEind FROM Product INNER JOIN Prijs ON Product.productid = Prijs.Product_productid''')
+cursor.execute('''SELECT name, value, product.datetimeStart, product.datetimeEnd FROM Product INNER JOIN price ON Product.productId = price.productId''')
+print('{:15} {:10} {:15} {:10}'.format('Productnaam', 'Prijs', 'Start datum', 'Eind datum'))
 for row in cursor:
-    print(row)
+    print('{:15} {:<10.2f} {:15} {:10}'.format(row[0], row[1], row[2], str(row[3])))
 
 db.close()
