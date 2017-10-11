@@ -6,7 +6,7 @@ def addProduct(name, startdate, price, enddate=None):
     id = cursor.lastrowid + 1
     cursor.execute(''' INSERT INTO product(productId,name,datetimeStart) VALUES(?,?,?)''', [id, name, startdate])
     cursor.execute(''' INSERT INTO price(productId, datetimeStart, value) VALUES(?,?,?)''', [id, startdate,price])
-    if enddate != None: # If Enddate was specified, add Enddate to database
+    if enddate != None: # If Enddate was specified, specify Enddate in database
         cursor.execute('''UPDATE product SET datetimeEnd = ? WHERE productId = ?''', [enddate, id])
         cursor.execute('''UPDATE price SET datetimeEnd = ? WHERE productId = ?''', [enddate, id])
     db.commit()
