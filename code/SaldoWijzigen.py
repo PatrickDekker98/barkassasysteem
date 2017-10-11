@@ -1,6 +1,5 @@
 import sqlite3
 import datetime
-import tkinter
 
 conn = sqlite3.connect('example.db')
 c = conn.cursor()
