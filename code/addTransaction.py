@@ -1,6 +1,6 @@
 import sqlite3, time, guiNumpad as numpad, calculateTransaction as calcT, tkinter, guiProducts
 
-db = sqlite3.connect('..\\barkassasysteem.db')
+db = sqlite3.connect('../barkassasysteem.db')
 cur = db.cursor()
 
 def addTransaction():
