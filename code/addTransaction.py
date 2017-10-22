@@ -1,11 +1,10 @@
-import sqlite3, time, guiNumpad as numpad, calculateTransaction as calcT, tkinter, guiProducts
+import sqlite3, time, guiNumpad as numpad, calculateTransaction as calcT, tkinter, guiProducts#, verifyCustomer
 
 db = sqlite3.connect('../barkassasysteem.db')
 cur = db.cursor()
 
 def addTransaction():
     transaction = []
-    total = 0
     done = False
     while done == False:
         choice = guiProducts.call()
@@ -28,7 +27,9 @@ def addTransaction():
 
 
     #Coupon check HIER
-    #Authenticatie en verificatie
+
+
+
     verificationmethodId = 1
     epochTime = int(str(time.time()).split('.')[0] + str(time.time()).split('.')[1][:3])
     cur.execute('''INSERT INTO 'transaction' (datetime, verificationMethodId) VALUES (?, ?)''',(epochTime,verificationmethodId))
