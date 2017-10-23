@@ -18,7 +18,7 @@ def getBalanceFromCustomer(customerId):
 
 def getBalanceFromHistory(customerId):
     """Fetches the balance, calculated from the transaction history"""
-    cursor.execute("SELECT SUM(p.amount * pr.value) AS total FROM customer c LEFT JOIN verificationMethod v ON c.customerId = v.customerId LEFT JOIN 'transaction' t ON v.verificationMethodId = t.verificationMethodId LEFT JOIN purchase p ON t.transactionId = p.transactionId LEFT JOIN price pr ON pr.productId = p.productId WHERE pr.datetimeStart < t.datetime  AND (pr.datetimeEnd > t.datetime OR pr.datetimeEnd IS NULL AND c.customerId = ?)", [customerId])
+    cursor.execute("SELECT SUM(p.amount * pr.value) AS total FROM customer c LEFT JOIN verificationMethod v ON c.customerId = v.customerId LEFT JOIN 'transaction' t ON v.verificationMethodId = t.verificationMethodId LEFT JOIN purchase p ON t.transactionId = p.transactionId LEFT JOIN price pr ON pr.productId = p.productId WHERE pr.datetimeStart < t.datetime  AND (pr.datetimeEnd > t.datetime OR pr.datetimeEnd IS NULL) AND c.customerId = ?", [customerId])
     totalSpent = round(cursor.fetchone()[0], 2)
     cursor.execute("SELECT sum(amount) as amount FROM balanceRaising WHERE customerId = ?", [customerId])
     totalPayed = round(cursor.fetchone()[0], 2)
