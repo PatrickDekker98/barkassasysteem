@@ -11,11 +11,9 @@ def raiseBalance(customerId):
     amountIn = askAmount()
 
     cursor.execute("SELECT balance FROM customer WHERE customerId = ?", customerId)
-    balans = cursor.fetchone()[0]
+    customerBalance = cursor.fetchone()[0]
 
-    newBalance = balans + amountIn
-
-    print(newBalance)
+    newBalance = customerBalance + amountIn
 
     cursor.execute('INSERT INTO balanceRaising (amount, datetime) VALUES (?,?)', (amountIn, delta_time))
     cursor.execute('UPDATE customer SET balance = ? WHERE customerId = ?', (newBalance, customerId))
