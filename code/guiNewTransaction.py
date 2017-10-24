@@ -1,6 +1,4 @@
 from main import *
-import sqlite3,datetime,guiProducts
-import tkinter
 
 
 class productSelection(tkinter.Frame):
@@ -28,9 +26,7 @@ class productSelection(tkinter.Frame):
 
     def fetchProducts(self):
         epochTime = str(datetime.date.today())
-        cursor.execute(
-            '''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',
-            (epochTime, epochTime))
+        cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',(epochTime, epochTime))
         products = cursor.fetchall()
         return products
 
@@ -72,6 +68,11 @@ class transactionOverview(tkinter.Frame):
             return
 
         pricePerItem = calculateProductPrice(product)
+        for bestaandProduct in self.transaction:
+            if product == bestaandProduct[0]:
+                bestaandProduct[1] += amount
+                self.updateTransactionListbox()
+                return
         self.transaction.append([product,amount, pricePerItem])
         self.updateTransactionListbox()
 
@@ -150,7 +151,7 @@ class numpadClass(tkinter.Frame):
 class newTransaction:
     def __init__(self, master):
         self.master = master
-        master.wm_attributes('-fullscreen', 'true')
+        #master.wm_attributes('-fullscreen', 'true')
 
         productSelectionFrame = tkinter.Frame(self.master)
         self.productSelection = productSelection(productSelectionFrame)
@@ -190,10 +191,7 @@ def calculateProductPrice(productid):
             return
 
 
-db = '../barkassasysteem.db'
-conn = sqlite3.connect(db)
-cursor = conn.cursor()
-
-root = tkinter.Tk()
-my_gui = newTransaction(root)
-root.mainloop()
+if __name__ == "__main__":
+    root = tkinter.Tk()
+    my_gui = newTransaction(root)
+    root.mainloop()
