@@ -1,20 +1,42 @@
 from main import *
+import categories
 
 
 class categoriesOverview(tkinter.Frame):
-    transaction = []
+    categories = []
     total = 0
 
     def __init__(self,master):
+
+
         self.master = master
         self.overview = tkinter.Listbox(self.master, width=55)
         self.overview.grid(column=0, row=1, columnspan=4)
         tkinter.Label(self.master, text="{:20}     {:3}".format('ID', 'Naam'), font=('Arial', 10)).grid(column=0, row=0,columnspan=2, sticky='w')
-        self.totalLabel = tkinter.Label(self.master,text='€ {:.2f}'.format(self.total), font=('Arial', 20), height=1, width=10)
-        self.totalLabel.grid(column=1, row=2)
-        tkinter.Button(self.master, text="+", font=('Arial', 20), height=1, width=10, bg='lightgreen', command=self.addProduct).grid(column=0, row=3)
-        tkinter.Button(self.master, text="-", font=('Arial', 20), height=1, width=10, bg='red',command=self.removeProduct).grid(column=1, row=3)
-        tkinter.Button(self.master, text="Afrekenen", font=('Arial', 20), height=1, width=20, bg='green',command=self.endTransaction).grid(column=0, row=4,columnspan=2)
+        tkinter.Button(self.master, text="Aanpassen", font=('Arial', 20), height=1, width=10, bg='#5AF', command=self.editCategory).grid(column=0, row=3)
+        tkinter.Button(self.master, text="Verwijderen", font=('Arial', 20), height=1, width=10, bg='#F88',command=self.deleteCategory).grid(column=1, row=3)
+        tkinter.Button(self.master, text="Nieuwe categorie", font=('Arial', 20), height=1, width=20, bg='#8F8',command=self.addCategory).grid(column=0, row=4,columnspan=2)
+        data = categories.getCategories()
+        for row in data:
+            self.categories.append(row)
+        self.updateCategoryListbox()
+
+
+    def editCategory(self):
+        print("editCategory")
+
+
+    def deleteCategory(self):
+        try:
+            product = my_gui.productSelection.returnValue()
+        except:
+            messageBox('Geen categorie geselecteerd', 'U heeft geen categorie geselecteerd. Selecteer een categorie voordat u deze verwijdert.', 'error')
+            return
+        print(product)
+
+
+    def addCategory(self):
+        print("addCategory")
 
 
     def addProduct(self):
@@ -40,34 +62,14 @@ class categoriesOverview(tkinter.Frame):
         self.updateTransactionListbox()
 
 
-    def updateTransactionListbox(self):
-        self.overview.delete(0,'end')
-        self.calculateTotal()
-        for product in self.transaction:
-            print(product)
-            self.overview.insert('end', '{:<50}x{:<7}€ {:<7.2f}'.format(lookupProductName(product[0]),product[1],(product[1] * product[2])))
+    def updateCategoryListbox(self):
+        for category in self.categories:
+            print(category)
+            self.overview.insert('end', '{:<50}{:<7}'.format(category[0], category[1]))
 
-
-    def removeProduct(self):
-        productindex = self.overview.index('active')
-        del self.transaction[productindex]
-        self.updateTransactionListbox()
-
-
-    def calculateTotal(self):
-        self.total = 0
-        for product in self.transaction:
-            self.total += (product[1] * product[2])
-        self.totalLabel.config(text='€ {:.2f}'.format(self.total))
-
-    def endTransaction(self):
-        if self.total == 0:
-            messageBox('Lege transactie', 'Dit is een lege transactie. Voeg eerst producten toe voordat u wil afrekenen!', 'info')
-        else:
-            messageBox('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
 
 
 if __name__ == "__main__":
     root = tkinter.Tk()
-    my_gui = newTransaction(root)
+    my_gui = categoriesOverview(root)
     root.mainloop()

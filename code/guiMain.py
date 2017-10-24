@@ -4,6 +4,7 @@ import tkinter, guiNewTransaction, guiCategories
 class topLevelWindow:
     def __init__(self, master):
         self.master = master
+        self.master.title("Bar Kassa Systeem")
         #self.master.wm_attributes('-fullscreen', 'true')
 
         menuFrame = tkinter.Frame(self.master)
@@ -18,8 +19,8 @@ class topLevelWindow:
 
         self.menu = buildMenu(menuFrame)
         self.content = buildContent(contentFrame)
-        #self.branding = buildBranding(brandingFrame)
-        #self.footer = buildFooter(footerFrame)
+        # self.branding = buildBranding(brandingFrame)
+        # self.footer = buildFooter(footerFrame)
 
 
 class buildMenu:
