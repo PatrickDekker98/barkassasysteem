@@ -97,7 +97,10 @@ class transactionOverview(tkinter.Frame):
         self.totalLabel.config(text='€ {:.2f}'.format(self.total))
 
     def endTransaction(self):
-        messageBox('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
+        if self.total == 0:
+            messageBox('Lege transactie', 'Dit is een lege transactie. Voeg eerst producten toe voordat u wil afrekenen!', 'info')
+        else:
+            messageBox('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
 
 
 class numpadClass(tkinter.Frame):
@@ -147,7 +150,7 @@ class numpadClass(tkinter.Frame):
 class newTransaction:
     def __init__(self, master):
         self.master = master
-        #master.wm_attributes('-fullscreen', 'true')
+        master.wm_attributes('-fullscreen', 'true')
 
         productSelectionFrame = tkinter.Frame(self.master)
         self.productSelection = productSelection(productSelectionFrame)
