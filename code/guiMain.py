@@ -26,9 +26,9 @@ class buildMenu:
     def __init__(self, master):
         self.master = master
         tkinter.Button(self.master, text='Transaction', command=lambda: my_gui.content.callTransaction()).grid(column=0,row=0)
-        tkinter.Button(self.master, text='Transaction', command=lambda: my_gui.content.callCustomers()).grid(column=1,row=0)
-        tkinter.Button(self.master, text='Transaction', command=lambda: my_gui.content.callProducts()).grid(column=2,row=0)
-        tkinter.Button(self.master, text='Transaction', command=lambda: my_gui.content.callCategories()).grid(column=3,row=0)
+        tkinter.Button(self.master, text='Klanten', command=lambda: my_gui.content.callCustomers()).grid(column=1,row=0)
+        tkinter.Button(self.master, text='Producten', command=lambda: my_gui.content.callProducts()).grid(column=2,row=0)
+        tkinter.Button(self.master, text='Categorieën', command=lambda: my_gui.content.callCategories()).grid(column=3,row=0)
 
 
 class buildContent:
