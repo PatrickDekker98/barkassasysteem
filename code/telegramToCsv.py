@@ -1,6 +1,14 @@
-import telepot
+#from main import *
 
-token = '466467969:AAHZ253Zam0jPyJaqTxQZ6baCbWnvatsxt4'
-TelegramBot = telepot.Bot(token)
-print(TelegramBot.getMe())
+def write2csv(telegramId, msg):
+    'schrijft telegram ID en bericht weg naar een CSV file'
 
+    import csv
+
+    with open('telegramBerichten.csv', 'a') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+
+        writer.writerow([telegramId, msg])
+
+#functie test
+write2csv(22, "neenuniet")

@@ -1,36 +1,30 @@
-import sqlite3
-import datetime
+from main import *
 
-conn = sqlite3.connect('barkassasysteem.db')
-c = conn.cursor()
+def raiseBalance(customerId):
+    'berekent tijd in epoch, vraagt het huidige balans op van de klant, berekent nieuwe balans. schrijft naar de db.'
 
-def raiseBalance():
+    epoch = datetime.datetime(1970, 1, 1)
+    i = datetime.datetime.now()
+
+    delta_time = int((i - epoch).total_seconds()) #tijd in epoch
 
     amountIn = askAmount()
 
-    datetime1 = datetime.date.today()
+    cursor.execute("SELECT balance FROM customer WHERE customerId = ?", customerId)
+    customerBalance = cursor.fetchone()[0]
 
-    c.execute('''SELECT balance FROM customer''')
-    balans = c.fetchone()
+    newBalance = customerBalance + amountIn
 
-    newBalance = balans + amountIn
+    cursor.execute('INSERT INTO balanceRaising (amount, datetime) VALUES (?,?)', (amountIn, delta_time))
+    cursor.execute('UPDATE customer SET balance = ? WHERE customerId = ?', (newBalance, customerId))
 
-    c.execute('''UPDATE balanceRaising SET amount = ? WHERE id = ? ''', (amount1))
-    c.execute('''UPDATE customer SET balance  = ? WHERE id = ?''', (newBalance))
-    c.execute(''''UPDATE ''')
+    conn.commit()
+    conn.close()
 
-    return
 
 def askAmount():
+    'fetched de balans verhoging van een GUI entry element'
 
     amountInput = Entry.get()
 
     return amountInput
-
-#c.execute('''CREATE TABLE customer(balance REAL)''')
-#c.execute('''CREATE TABLE balanceRaising(balanceRaisingId INTEGER, customerId INTEGER, amount REAL, datetime DATETIME)''')
-#c.execute('''INSERT INTO balanceRaising(balanceRaisingId, customerId, amount, datetime) VALUES(?,?,?,?)''', (balanceRaisingId1, customerId1, amount1, datetime1, ))
-
-raiseBalance()
-
-conn.commit()
