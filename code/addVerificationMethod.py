@@ -1,14 +1,11 @@
-import sqlite3 as sql
-
-db = '../barkassasysteem.db'
-conn = sql.connect(db)
-cursor = conn.cursor()
+from main import *
 
 
 def addVerificationMethod(customerId, verificationTypeId, reference):
     try:
         cursor.execute('INSERT INTO verificationMethod (customerId, verificationTypeId, reference) VALUES (?,?,?)', (customerId, verificationTypeId, reference))
         conn.commit()
+        printGui("Verification method succesfully added!")
         return cursor.rowcount == 1
     except:
         raise ValueError("Verification method could not be added to the database. Please try again.")

@@ -1,9 +1,4 @@
-import sqlite3 as sql
-
-db = '../barkassasysteem.db'
-conn = sql.connect(db)
-cursor = conn.cursor()
-
+from main import *
 
 def verifyCustomer(customerId, verificationTypeId, reference):
     try:
