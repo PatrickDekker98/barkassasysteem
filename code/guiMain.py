@@ -1,5 +1,5 @@
 from main import *
-import tkinter, guiNewTransaction
+import tkinter, guiNewTransaction, guiCategories
 
 class topLevelWindow:
     def __init__(self, master):
@@ -45,7 +45,7 @@ class buildContent:
         None
 
     def callCategories(self):
-        None
+        guiCategories.categoriesOverview(self.master)
 
 
 
