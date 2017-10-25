@@ -4,27 +4,43 @@ from main import *
 class newTransaction:
     def __init__(self, master):
         self.master = master
+
         productSelectionFrame = tkinter.Frame(self.master)
-        self.productSelection = self.buildProductSelection(productSelectionFrame)
-        productSelectionFrame.grid(column=0,row=0, columnspan=2)
-
-        numpadFrame = tkinter.Frame(self.master)
-        self.numpad = self.buildNumpadClass(numpadFrame)
-        numpadFrame.grid(column=1,row=1,columnspan=2, sticky='E')
-
         currentTransactionFrame = tkinter.Frame(self.master)
+        numpadFrame = tkinter.Frame(self.master)
+
+        self.productSelection = self.buildProductSelection(productSelectionFrame)
         self.currentTransaction = self.buildTransactionOverview(currentTransactionFrame)
-        currentTransactionFrame.grid(column=2,row=0, sticky='e')
+        self.numpad = self.buildNumpadClass(numpadFrame)
+
+        productSelectionFrame.grid(column=0, row=0, columnspan=2, sticky='nw')
+        currentTransactionFrame.grid(column=2, row=0, sticky='e')
+        numpadFrame.grid(column=1, row=1, columnspan=2, sticky='se')
 
 
     def buildProductSelection(self,master):
-        tkinter.Label(master, text="Geselecteerd:", font=('Arial', 20), height=2).grid(column=0,row=0)
-        self.selectedProductLabel = tkinter.Label(master, text="", font=("Arial", 20), height=2)
-        self.selectedProductLabel.grid(column=1, row=0, columnspan=2)
+        selectionFrame = tkinter.Frame(master)
+        categoryFrame = tkinter.Frame(master)
+        productsFrame = tkinter.Frame(master)
+        selectionFrame.grid(column=0,row=0,sticky='w')
+        categoryFrame.grid(column=0,row=1,sticky='w')
+        productsFrame.grid(column=0,row=2,sticky='w')
+
+        tkinter.Label(selectionFrame, text="Geselecteerd:", font=('Arial', 20), height=2).pack(side='left')
+        self.selectedProductLabel = tkinter.Label(selectionFrame, text="", font=("Arial", 20), height=2)
+        self.selectedProductLabel.pack(side='left')
         self.selectedProduct = None
+
+        self.categoryProductsDict = self.fetchProducts()
+        for category in self.categoryProductsDict:
+            cmd = lambda products = self.categoryProductsDict[category]: self.productButtons(productsFrame, products)
+            tkinter.Button(categoryFrame, text=category[1], font=('Arial', 15), height=2, width=15, command=cmd, bg='lightblue').pack(side='left')
+
+    def productButtons(self, master, products):
         r = 1
         c = 0
-        for product in self.fetchProducts():
+
+        for product in products:
             cmd = lambda id=product[0]: self.set(id)
             tkinter.Button(master, text=product[1][:13], font=('Arial', 15), height=2, width=15, command=cmd).grid(row=r, column=c)
             c += 1
@@ -39,9 +55,19 @@ class newTransaction:
 
     def fetchProducts(self):
         epochTime = str(datetime.date.today())
-        cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',(epochTime, epochTime))
-        products = cursor.fetchall()
+        products = dict()
+        for category in self.fetchProductCategories():
+            cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS ?''',(epochTime, epochTime, category[0]))
+            products[category] = cursor.fetchall()
+        cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS NULL''',(epochTime, epochTime))
+        products[('NULL', 'Anders')] = cursor.fetchall()
         return products
+
+    def fetchProductCategories(self):
+        epochTime = str(datetime.date.today())
+        cursor.execute('''SELECT categoryId, name FROM category WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',(epochTime, epochTime))
+        categories = cursor.fetchall()
+        return categories
 
     def productsReturnValue(self):
         value = self.selectedProduct
@@ -114,13 +140,13 @@ class newTransaction:
         c = 0
         for b in self.buttons:
             cmd = lambda button=b: self.numpadAdd(button)
-            tkinter.Button(master, text=b, font=('Arial', 20), height=2, width=7, command=cmd).grid(row=r, column=c)
+            tkinter.Button(master, text=b, font=('Arial', 15), height=2, width=15, command=cmd).grid(row=r, column=c)
             c += 1
             if c > 4:
                 c = 0
                 r += 1
-        tkinter.Button(master, text='<', font=('Arial', 20), height=2, width=7, bg='red', command=self.numpadBackspace).grid(row=1, column=5)
-        tkinter.Button(master, text='C', font=('Arial', 20), height=2, width=7, bg='red', command=self.numpadClear).grid(row=2, column=5)
+        tkinter.Button(master, text='<', font=('Arial', 15), height=2, width=15, bg='red', command=self.numpadBackspace).grid(row=1, column=5)
+        tkinter.Button(master, text='C', font=('Arial', 15), height=2, width=15, bg='red', command=self.numpadClear).grid(row=2, column=5)
 
 
     def numpadAdd(self, number):
@@ -164,7 +190,6 @@ def calculateProductPrice(productid):
         except:
             messageBox('Geen product geselecteerd','U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.','error')
             return
-
 
 if __name__ == "__main__":
     root = tkinter.Tk()
