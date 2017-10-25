@@ -49,7 +49,6 @@ class buildContent:
         guiCategories.categoriesOverview(self.master)
 
 
-
 root = tkinter.Tk()
 my_gui = topLevelWindow(root)
 root.mainloop()
