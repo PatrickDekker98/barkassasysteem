@@ -1,6 +1,7 @@
 from main import *
 import tkinter
 import tkinter.simpledialog as simpledialog
+import guiCustomers
 import guiNewTransaction
 import guiCategories
 
@@ -56,7 +57,7 @@ class buildContent(topLevelWindow):
 
     def callCustomers(self):
         self.resetContent()
-        None
+        guiCustomers.customers(self.master)
 
     def callProducts(self):
         self.resetContent()
