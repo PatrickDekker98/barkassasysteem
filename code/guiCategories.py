@@ -34,7 +34,7 @@ class categoriesOverview(tkinter.Frame):
 
     def deleteCategory(self):
         try:
-            category = categories[self.overview.index('active')]
+            category = self.categories[self.overview.index('active')]
             if categories.deleteCategory(category[0]):
                 self.setCategories()
                 self.updateCategoryListbox()
