@@ -1,5 +1,5 @@
 from main import *
-import categories
+import categories, products
 
 
 class newTransaction:
@@ -27,12 +27,12 @@ class newTransaction:
         categoryFrame.grid(column=0,row=1,sticky='w')
         productsFrame.grid(column=0,row=2,sticky='w')
 
-        tkinter.Label(selectionFrame, text="Geselecteerd:", font=('Arial', 20), height=2).pack(side='left')
+        tkinter.Label(selectionFrame, text="Geselecteerd:", font=('Arial', 20)).pack(side='left')
         self.selectedProductLabel = tkinter.Label(selectionFrame, text="", font=("Arial", 20), height=2)
         self.selectedProductLabel.pack(side='left')
         self.selectedProduct = None
 
-        self.categoryProductsDict = self.fetchProducts()
+        self.categoryProductsDict = products.fetchProductsPerCategory(categories.getCategories())
         for category in self.categoryProductsDict:
             cmd = lambda products = self.categoryProductsDict[category]: self.productButtons(productsFrame, products)
             tkinter.Button(categoryFrame, text=category[1], font=('Arial', 15), height=2, width=15, command=cmd, bg='lightblue').pack(side='left')
@@ -50,19 +50,11 @@ class newTransaction:
                 r += 1
 
     def set(self,productid):
-        productname = lookupProductName(productid)
+        productname = products.lookupProductName(productid)
         self.selectedProduct = productid
         self.selectedProductLabel.config(text=productname)
 
-    def fetchProducts(self):
-        epochTime = str(datetime.date.today())
-        products = dict()
-        for category in categories.getCategories():
-            cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS ?''',(epochTime, epochTime, category[0]))
-            products[category] = cursor.fetchall()
-        cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS NULL''',(epochTime, epochTime))
-        products[('NULL', 'Anders')] = cursor.fetchall()
-        return products
+
 
     def productsReturnValue(self):
         value = self.selectedProduct
@@ -73,9 +65,9 @@ class newTransaction:
     def buildTransactionOverview(self,master):
         self.transaction = []
         self.total = 0
-        self.overview = tkinter.Listbox(master, width=55)
+        self.overview = tkinter.Listbox(master, width=55, font='consolas',)
         self.overview.grid(column=0, row=1, columnspan=4)
-        tkinter.Label(master, text="{:20}     {:3}     {:7}".format('Product', 'Aantal', 'Prijs'), font=('Arial', 10)).grid(column=0, row=0,columnspan=2, sticky='w')
+        tkinter.Label(master, text="{:58}     {:4}     {:7}".format('Product', 'Aantal', 'Prijs'), font=('Arial', 10)).grid(column=0, row=0,columnspan=2, sticky='w')
         self.totalLabel = tkinter.Label(master,text='€ {:.2f}'.format(self.total), font=('Arial', 20), height=1, width=10)
         self.totalLabel.grid(column=1, row=2)
         tkinter.Button(master, text="+", font=('Arial', 20), height=1, width=10, bg='lightgreen', command=self.addProduct).grid(column=0, row=3)
@@ -92,7 +84,7 @@ class newTransaction:
             messageBox('Geen aantal gekozen', 'U heeft geen aantal aangegeven. Geef aan hoeveelheid aan voordat u dit toe wilt voegen aan de transactie', 'error')
             return
 
-        pricePerItem = calculateProductPrice(product)
+        pricePerItem = products.calculateProductPrice(product)
         for bestaandProduct in self.transaction:
             if product == bestaandProduct[0]:
                 bestaandProduct[1] += amount
@@ -105,7 +97,7 @@ class newTransaction:
         self.overview.delete(0,'end')
         self.calculateTotal()
         for product in self.transaction:
-            self.overview.insert('end', '{:<50}x{:<7}€ {:<7.2f}'.format(lookupProductName(product[0]),product[1],(product[1] * product[2])))
+            self.overview.insert('end', '{:<30}x{:<5}€ {:<4.2f}'.format(products.lookupProductName(product[0]),product[1],(product[1] * product[2])))
 
     def removeProduct(self):
         productindex = self.overview.index('active')
@@ -164,28 +156,7 @@ class newTransaction:
 
 
 
-def lookupProductName(id):
-    cursor.execute('''SELECT name FROM Product WHERE productId = ?''', (id,))
-    productname = cursor.fetchone()[0]
-    return productname
 
-
-def calculateProductPrice(productid):
-    epochTime = str(datetime.date.today())
-    cursor.execute('''SELECT EXISTS(SELECT * FROM discount d WHERE d.productid = ? AND d.datetimeStart < ? AND (d.datetimeEnd > ? OR d.datetimeEnd IS NULL))''', (productid, epochTime, epochTime))
-    if cursor.fetchone()[0] == 1:
-        cursor.execute('''SELECT d.productId, p.value, d.percentage FROM discount d INNER JOIN price p ON p.productId = d.productId WHERE d.productid = ? AND d.datetimeStart < ? AND (d.datetimeEnd > ? OR d.datetimeEnd IS NULL)''',(productid, epochTime, epochTime))
-        productDiscount = cursor.fetchone()
-        productPrice = productDiscount[1] * productDiscount[2]
-        return eval('{:.2f}'.format(productPrice))
-    else:
-        try:
-            cursor.execute('''SELECT p.value FROM price p WHERE p.productid = ? AND p.datetimeStart < ? AND (p.datetimeEnd > ? OR p.datetimeEnd IS NULL)''',(productid, epochTime, epochTime))
-            productPrice = cursor.fetchone()
-            return productPrice[0]
-        except:
-            messageBox('Geen product geselecteerd','U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.','error')
-            return
 
 if __name__ == "__main__":
     root = tkinter.Tk()
