@@ -4,6 +4,7 @@ import tkinter.simpledialog as simpledialog
 import guiCustomers
 import guiNewTransaction
 import guiCategories
+import guiProducts
 
 class topLevelWindow:
     def __init__(self, master):
@@ -61,7 +62,7 @@ class buildContent(topLevelWindow):
 
     def callProducts(self):
         self.resetContent()
-        None
+        guiProducts.productMain(self.master)
 
     def callCategories(self):
         self.resetContent()
