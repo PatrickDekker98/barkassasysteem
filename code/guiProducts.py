@@ -1,152 +1,149 @@
 from main import *
+import products, discounts
 
-
-class newTransaction:
+class productMain:
     def __init__(self, master):
         self.master = master
-        self.activeContent = 'Menu'
 
-        contentFrame = tkinter.Frame(self.master)
+        self.contentFrame = tkinter.Frame(self.master)
         returnFrame = tkinter.Frame(self.master)
 
-        self.content = self.buildContent(contentFrame)
+
+        self.buildMenu = self.buildMenuFrame(self.contentFrame)
+
         self.returnFrame = self.buildReturn(returnFrame)
 
-        contentFrame.pack(side='top')
-        returnFrame.pack(side='top')
+        self.contentFrame.pack(side='top')
+        returnFrame.pack(side='left')
 
 
-    def buildContent(self,master):
+    def buildMenuFrame(self, master):
+        self.resetContent()
+
+        productsMenuFrame = tkinter.Frame(master)
+        discountsMenuFrame = tkinter.Frame(master)
 
 
-    def buildReturn(self, master):
-        tkinter.Button(master,text='<', font=('Arial', 15), height=2, width=15, command=self.returnFunction).pack(side='left')
+        tkinter.Button(productsMenuFrame, text='Producten', font=('Arial', 15), height=2, width=15, bg='lightblue', command=self.viewProduct).pack()
+        tkinter.Button(discountsMenuFrame, text='Kortingen', font=('Arial', 15), height=2, width=15, bg='lightblue', command=self.viewDiscount).pack()
 
-    def returnFunction(self):
+        productsMenuFrame.grid(column=0,row=0)
+        discountsMenuFrame.grid(column=1,row=0)
 
+    def viewProduct(self):
+        self.resetContent()
 
-    def fetchProducts(self):
-        epochTime = str(datetime.date.today())
-        products = dict()
-        for category in self.fetchProductCategories():
-            cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS ?''',(epochTime, epochTime, category[0]))
-            products[category] = cursor.fetchall()
-        cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS NULL''',(epochTime, epochTime))
-        products[('NULL', 'Anders')] = cursor.fetchall()
-        return products
+        tkinter.Label(self.contentFrame, text='{:83}{:21}{:36}{:12}'.format('Product', 'Prijs', 'Start', 'Eind')).grid(column=0,row=0, sticky='w', columnspan=4)
+        self.productsListbox = tkinter.Listbox(self.contentFrame, font='consolas', width=200)
+        self.productsListbox.grid(column=0,row=1, columnspan=4)
+        currentProducts = products.fetchProducts()
+        for p in currentProducts:
+            item = '{:30}{:<8.2f}{:13}{:20}'.format(str(p[0]), p[1], str(p[2])[:10], str(p[3]))
+            self.productsListbox.insert('end', item)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addProduct).grid(column=2,row=2)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Aanpassen', bg='yellow', command=self.alterProduct).grid(column=3,row=2)
 
-    def fetchProductCategories(self):
-        epochTime = str(datetime.date.today())
-        cursor.execute('''SELECT categoryId, name FROM category WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',(epochTime, epochTime))
-        categories = cursor.fetchall()
-        return categories
-
-    def productsReturnValue(self):
-        value = self.selectedProduct
-        self.selectedProduct = None
-        self.selectedProductLabel.config(text='')
-        return value
-
-    def buildTransactionOverview(self,master):
-        self.transaction = []
-        self.total = 0
-        self.overview = tkinter.Listbox(master, width=55)
-        self.overview.grid(column=0, row=1, columnspan=4)
-        tkinter.Label(master, text="{:20}     {:3}     {:7}".format('Product', 'Aantal', 'Prijs'), font=('Arial', 10)).grid(column=0, row=0,columnspan=2, sticky='w')
-        self.totalLabel = tkinter.Label(master,text='€ {:.2f}'.format(self.total), font=('Arial', 20), height=1, width=10)
-        self.totalLabel.grid(column=1, row=2)
-        tkinter.Button(master, text="+", font=('Arial', 20), height=1, width=10, bg='lightgreen', command=self.addProduct).grid(column=0, row=3)
-        tkinter.Button(master, text="-", font=('Arial', 20), height=1, width=10, bg='red',command=self.removeProduct).grid(column=1, row=3)
-        tkinter.Button(master, text="Afrekenen", font=('Arial', 20), height=1, width=20, bg='green',command=self.endTransaction).grid(column=0, row=4,columnspan=2)
 
     def addProduct(self):
-        product = self.productsReturnValue()
-        amount = self.numpadReturnValue()
-        if product == None:
-            messageBox('Geen product geselecteerd', 'U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.', 'error')
+        self.resetContent()
+        productInputFrame = tkinter.Frame(self.contentFrame)
+        priceInputFrame = tkinter.Frame(self.contentFrame)
+
+        productInputFrame.pack(side='left')
+        priceInputFrame.pack(side='left')
+
+        tkinter.Label(productInputFrame, text="Product:", font=('Arial', 20)).grid(column=0,row=0,columnspan=3, sticky='w')
+        tkinter.Label(productInputFrame, text='Naam').grid(column=0, row=1, sticky='w')
+        tkinter.Label(productInputFrame, text='Beschikbaar vanaf').grid(column=0, row=2, sticky='w')
+        tkinter.Label(productInputFrame, text='Beschikbaar tot').grid(column=0, row=3, sticky='w')
+        productInputFrame.columnconfigure(3,minsize=50)
+
+        self.productNameEntry = tkinter.Entry(productInputFrame)
+        self.productDatetimeStartEntry = tkinter.Entry(productInputFrame)
+        self.productDatetimeEndEntry = tkinter.Entry(productInputFrame)
+        self.productNameEntry.grid(column=1, row=1)
+        self.productDatetimeStartEntry.grid(column=1,row=2)
+        self.productDatetimeEndEntry.grid(column=1,row=3)
+
+        tkinter.Button(productInputFrame, text='Vandaag', command=lambda: self.currentDate(self.productDatetimeStartEntry)).grid(column=2,row=2)
+
+        tkinter.Label(priceInputFrame, text="Prijs:", font=('Arial', 20)).grid(column=0, row=0, columnspan=3, sticky='w')
+        tkinter.Label(priceInputFrame, text='Prijs').grid(column=0, row=1, sticky='w')
+        tkinter.Label(priceInputFrame, text='Van').grid(column=0, row=2, sticky='w')
+        tkinter.Label(priceInputFrame, text='Tot').grid(column=0, row=3, sticky='w')
+        priceInputFrame.columnconfigure(3, minsize=50)
+
+        self.priceValueEntry = tkinter.Entry(priceInputFrame)
+        self.priceDatetimeStartEntry = tkinter.Entry(priceInputFrame)
+        self.priceDatetimeEndEntry = tkinter.Entry(priceInputFrame)
+        self.priceValueEntry.grid(column=1, row=1)
+        self.priceDatetimeStartEntry.grid(column=1, row=2)
+        self.priceDatetimeEndEntry.grid(column=1, row=3)
+
+        tkinter.Button(priceInputFrame, text='Vandaag', command=lambda: self.currentDate(self.priceDatetimeStartEntry)).grid(column=2, row=2)
+        tkinter.Button(self.contentFrame, text='Voeg toe', bg='lightgreen', command=self.addProductFinnish).pack(side='left')
+
+    def addProductFinnish(self):
+        if self.productNameEntry.get() == '':
+            tkinter.tkMessageBox.showwarning("Ongelidge invoer!","Voer een productnaam in!")
             return
-        elif amount == str():
-            messageBox('Geen aantal gekozen', 'U heeft geen aantal aangegeven. Geef aan hoeveelheid aan voordat u dit toe wilt voegen aan de transactie', 'error')
+        elif self.productDatetimeStartEntry.get() == '':
+            tkinter.tkMessageBox.showwarning("Ongelidge invoer!", "Voer een startdatum voor het product in!")
             return
+        elif self.priceValueEntry.get() == '':
+            tkinter.tkMessageBox.showwarning("Ongelidge invoer!", "Voer een prijs in!")
+            return
+        elif self.priceDatetimeStartEntry.get() == '':
+            tkinter.tkMessageBox.showwarning("Ongelidge invoer!", "Voer een startdatum voor de prijs in!")
+            return
+        print('HET WERKT BIJNA')
+        products.addProduct(self.productNameEntry.get(), self.productDatetimeStartEntry.get(), self.priceValueEntry.get(), self.priceDatetimeStartEntry.get())
 
-        pricePerItem = calculateProductPrice(product)
-        for bestaandProduct in self.transaction:
-            if product == bestaandProduct[0]:
-                bestaandProduct[1] += amount
-                self.updateTransactionListbox()
-                return
-        self.transaction.append([product,amount, pricePerItem])
-        self.updateTransactionListbox()
-
-    def updateTransactionListbox(self):
-        self.overview.delete(0,'end')
-        self.calculateTotal()
-        for product in self.transaction:
-            self.overview.insert('end', '{:<50}x{:<7}€ {:<7.2f}'.format(lookupProductName(product[0]),product[1],(product[1] * product[2])))
-
-    def removeProduct(self):
-        productindex = self.overview.index('active')
-        del self.transaction[productindex]
-        self.updateTransactionListbox()
-
-    def calculateTotal(self):
-        self.total = 0
-        for product in self.transaction:
-            self.total += (product[1] * product[2])
-        self.totalLabel.config(text='€ {:.2f}'.format(self.total))
-
-    def endTransaction(self):
-        if self.total == 0:
-            messageBox('Lege transactie', 'Dit is een lege transactie. Voeg eerst producten toe voordat u wil afrekenen!', 'info')
-        else:
-            messageBox('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
-
-    def buildNumpadClass(self,master):
-        self.numpadValue = str()
-        tkinter.Label(master, text="Aantal:", font=('Arial', 20), height=5).grid(column=0, row=0)
-        self.amount = tkinter.Label(master, text=self.numpadValue, font=("Arial", 20), height=5)
-        self.amount.grid(column=1, row=0)
-
-        self.buttons = ['1', '2', '3','4', '5', '6','7', '8', '9', '0']
-        r = 1
-        c = 0
-        for b in self.buttons:
-            cmd = lambda button=b: self.numpadAdd(button)
-            tkinter.Button(master, text=b, font=('Arial', 15), height=2, width=15, command=cmd).grid(row=r, column=c)
-            c += 1
-            if c > 4:
-                c = 0
-                r += 1
-        tkinter.Button(master, text='<', font=('Arial', 15), height=2, width=15, bg='red', command=self.numpadBackspace).grid(row=1, column=5)
-        tkinter.Button(master, text='C', font=('Arial', 15), height=2, width=15, bg='red', command=self.numpadClear).grid(row=2, column=5)
+    def alterProduct(self):
+        self.resetContent()
 
 
-    def numpadAdd(self, number):
-        self.numpadValue = self.numpadValue + number
-        self.amount.config(text=self.numpadValue)
 
-    def numpadBackspace(self):
-        self.numpadValue = self.numpadValue[:-1]
-        self.amount.config(text=self.numpadValue)
+    def viewDiscount(self):
+        self.resetContent()
 
-    def numpadClear(self):
-        self.numpadValue = ''
-        self.amount.config(text=self.numpadValue)
+        tkinter.Label(self.contentFrame, text='{:83}{:21}{:36}{:12}'.format('Product', 'Prijs', 'Start', 'Eind')).grid(column=0,row=0, sticky='w')
+        productsListbox = tkinter.Listbox(self.contentFrame, font='consolas', width=200)
+        productsListbox.grid(column=0,row=1)
+        currentProducts = discounts.fetchDiscounts()
+        for p in currentProducts:
+            item = '{:30}{:<8.2f}{:13}{:20}'.format(str(p[0]), p[1], str(p[2])[:10], str(p[3]))
+            productsListbox.insert('end', item)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addDiscount).grid(column=2, row=2)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Aanpassen', bg='yellow',command=self.alterDiscount).grid(column=3, row=2)
 
-    def numpadReturnValue(self):
-        value = self.numpadValue
-        self.numpadValue = str()
-        self.amount.config(text=self.numpadValue)
-        return int(value)
 
-    def readyToCloseScreen(self):
-        if self.numpadReturnValue() != 0 or self.selectedProduct != None or self.transaction != []:
-            return tkinter.askokcancel('Waarschuwing', 'Uw data is nog niet opgeslagen, wilt u deze weggooien?')
-        else:
-            return False
+
+    def addDiscount(self):
+        self.resetContent()
+
+
+
+    def alterDiscount(self):
+        self.resetContent()
+
+
+
+    def resetContent(self):
+        for widget in self.contentFrame.winfo_children():
+            widget.destroy()
+
+    def buildReturn(self, master):
+        tkinter.Button(master,text='terug', font=('Arial', 10), command=self.returnFunction).pack(side='left')
+
+    def returnFunction(self):
+        self.buildMenu
+
+    def currentDate(self, inputfield):
+        inputfield.insert('end', str(datetime.datetime.today())[:19])
 
 
 if __name__ == "__main__":
     root = tkinter.Tk()
-    my_gui = newTransaction(root)
+    my_gui = productMain(root)
     root.mainloop()
