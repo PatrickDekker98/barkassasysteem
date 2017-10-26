@@ -1,4 +1,5 @@
 from main import *
+import categories
 
 
 class newTransaction:
@@ -56,18 +57,12 @@ class newTransaction:
     def fetchProducts(self):
         epochTime = str(datetime.date.today())
         products = dict()
-        for category in self.fetchProductCategories():
+        for category in categories.getCategories():
             cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS ?''',(epochTime, epochTime, category[0]))
             products[category] = cursor.fetchall()
         cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL) AND categoryId IS NULL''',(epochTime, epochTime))
         products[('NULL', 'Anders')] = cursor.fetchall()
         return products
-
-    def fetchProductCategories(self):
-        epochTime = str(datetime.date.today())
-        cursor.execute('''SELECT categoryId, name FROM category WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',(epochTime, epochTime))
-        categories = cursor.fetchall()
-        return categories
 
     def productsReturnValue(self):
         value = self.selectedProduct
@@ -166,12 +161,6 @@ class newTransaction:
         self.numpadValue = str()
         self.amount.config(text=self.numpadValue)
         return int(value)
-
-    def readyToCloseScreen(self):
-        if self.numpadReturnValue() != 0 or self.selectedProduct != None or self.transaction != []:
-            return tkinter.askokcancel('Waarschuwing', 'Uw data is nog niet opgeslagen, wilt u deze weggooien?')
-        else:
-            return False
 
 
 
