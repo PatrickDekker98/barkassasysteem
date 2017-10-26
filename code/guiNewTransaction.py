@@ -18,6 +18,10 @@ class newTransaction:
         numpadFrame.grid(column=1, row=1, columnspan=2, sticky='se')
 
 
+    def readyToCloseScreen(self):
+        return true
+
+
     def buildProductSelection(self,master):
         selectionFrame = tkinter.Frame(master)
         categoryFrame = tkinter.Frame(master)
