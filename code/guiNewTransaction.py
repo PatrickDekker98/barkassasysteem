@@ -167,6 +167,13 @@ class newTransaction:
         self.amount.config(text=self.numpadValue)
         return int(value)
 
+    def readyToCloseScreen(self):
+        if self.numpadReturnValue() != 0 or self.selectedProduct != None or self.transaction != []:
+            return tkinter.askokcancel('Waarschuwing', 'Uw data is nog niet opgeslagen, wilt u deze weggooien?')
+        else:
+            return False
+
+
 
 def lookupProductName(id):
     cursor.execute('''SELECT name FROM Product WHERE productId = ?''', (id,))
