@@ -67,9 +67,8 @@ class buildContent(topLevelWindow):
         guiCategories.categoriesOverview(self.master)
 
     def resetContent(self):
-        if guiNewTransaction.readyToCloseScreen():#and alle andere vensters hier:
-            for widget in self.master.winfo_children():
-                widget.destroy()
+        for widget in self.master.winfo_children():
+            widget.destroy()
 
 
 class buildFooter:
