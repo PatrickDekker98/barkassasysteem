@@ -1,5 +1,8 @@
 from main import *
-import tkinter, guiNewTransaction, guiCategories
+import tkinter
+import tkinter.simpledialog as simpledialog
+import guiNewTransaction
+import guiCategories
 
 class topLevelWindow:
     def __init__(self, master):

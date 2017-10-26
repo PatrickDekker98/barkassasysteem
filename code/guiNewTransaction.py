@@ -1,7 +1,26 @@
 from main import *
 
 
-class productSelection(tkinter.Frame):
+class newTransaction:
+    def __init__(self, master):
+        self.master = master
+        #master.wm_attributes('-fullscreen', 'true')
+
+        productSelectionFrame = tkinter.Frame(self.master)
+        self.productSelection = buildProductSelection(productSelectionFrame)
+        productSelectionFrame.grid(column=0,row=0, columnspan=2)
+
+
+        numpadFrame = tkinter.Frame(self.master)
+        self.numpad = buildNumpadClass(numpadFrame)
+        numpadFrame.grid(column=1,row=1,columnspan=2, sticky='E')
+
+        currentTransactionFrame = tkinter.Frame(self.master)
+        currentTransaction = buildTransactionOverview(currentTransactionFrame)
+        currentTransactionFrame.grid(column=2,row=0, sticky='e')
+
+
+class buildProductSelection:
     def __init__(self,master):
         self.master=master
         tkinter.Label(self.master, text="Geselecteerd:", font=('Arial', 20), height=2).grid(column=0,row=0)
@@ -17,19 +36,16 @@ class productSelection(tkinter.Frame):
                 c = 0
                 r += 1
 
-
     def set(self,productid):
         productname = lookupProductName(productid)
         self.currentSelection = productid
         self.selection.config(text=productname)
-
 
     def fetchProducts(self):
         epochTime = str(datetime.date.today())
         cursor.execute('''SELECT productId, name FROM product WHERE datetimeStart < ? AND (datetimeEnd > ? OR datetimeEnd IS NULL)''',(epochTime, epochTime))
         products = cursor.fetchall()
         return products
-
 
     def returnValue(self):
         value = self.currentSelection
@@ -38,7 +54,7 @@ class productSelection(tkinter.Frame):
         return value
 
 
-class transactionOverview(tkinter.Frame):
+class buildTransactionOverview:
     transaction = []
     total = 0
 
@@ -81,7 +97,6 @@ class transactionOverview(tkinter.Frame):
         self.overview.delete(0,'end')
         self.calculateTotal()
         for product in self.transaction:
-            print(product)
             self.overview.insert('end', '{:<50}x{:<7}€ {:<7.2f}'.format(lookupProductName(product[0]),product[1],(product[1] * product[2])))
 
 
@@ -104,7 +119,7 @@ class transactionOverview(tkinter.Frame):
             messageBox('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
 
 
-class numpadClass(tkinter.Frame):
+class buildNumpadClass:
     def __init__(self,master):
         self.master = master
         self.totalValue = ''
@@ -146,25 +161,6 @@ class numpadClass(tkinter.Frame):
         self.totalValue = ''
         self.amount.config(text=self.totalValue)
         return int(value)
-
-
-class newTransaction:
-    def __init__(self, master):
-        self.master = master
-        #master.wm_attributes('-fullscreen', 'true')
-
-        productSelectionFrame = tkinter.Frame(self.master)
-        self.productSelection = productSelection(productSelectionFrame)
-        productSelectionFrame.grid(column=0,row=0, columnspan=2)
-
-
-        numpadFrame = tkinter.Frame(self.master)
-        self.numpad = numpadClass(numpadFrame)
-        numpadFrame.grid(column=1,row=1,columnspan=2, sticky='E')
-
-        currentTransactionFrame = tkinter.Frame(self.master)
-        currentTransaction = transactionOverview(currentTransactionFrame)
-        currentTransactionFrame.grid(column=2,row=0, sticky='e')
 
 
 def lookupProductName(id):

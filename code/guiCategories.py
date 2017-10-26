@@ -25,46 +25,30 @@ class categoriesOverview(tkinter.Frame):
             self.categories.append(row)
 
     def editCategory(self):
-        print("editCategory")
+        category = self.categories[self.overview.index('active')]
+        input = simpledialog.askstring("Categorie", "Pas deze categorie aan", initialvalue=category[1])
+        if categories.updateCategory(category[0], input):
+            self.setCategories()
+            self.updateCategoryListbox()
 
 
     def deleteCategory(self):
-        # try:
-        category = self.overview.index('active')
-        print(self.categories[category][0])
-        if categories.deleteCategory(self.categories[category][0]):
-            self.setCategories()
-            self.updateCategoryListbox()
-        # except:
-        #     messageBox('Geen categorie geselecteerd', 'U heeft geen categorie geselecteerd. Selecteer een categorie voordat u deze verwijdert.', 'error')
-        #     return
+        try:
+            category = categories[self.overview.index('active')]
+            if categories.deleteCategory(category[0]):
+                self.setCategories()
+                self.updateCategoryListbox()
+        except:
+            messageBox('Geen categorie geselecteerd', 'U heeft geen categorie geselecteerd. Selecteer een categorie voordat u deze verwijdert.', 'error')
+            return
 
 
     def addCategory(self):
-        print("addCategory")
+        input = simpledialog.askstring("Categorie", "Voeg een categorie toe")
+        if categories.addCategory(input):
+            self.setCategories()
+            self.updateCategoryListbox()
 
-
-    def addProduct(self):
-        try:
-            product = my_gui.productSelection.returnValue()
-        except:
-            messageBox('Geen product geselecteerd', 'U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.', 'error')
-            return
-
-        try:
-            amount = my_gui.numpad.returnValue()
-        except:
-            messageBox('Geen aantal gekozen', 'U heeft geen aantal aangegeven. Geef aan hoeveelheid aan voordat u dit toe wilt voegen aan de transactie', 'error')
-            return
-
-        pricePerItem = calculateProductPrice(product)
-        for bestaandProduct in self.transaction:
-            if product == bestaandProduct[0]:
-                bestaandProduct[1] += amount
-                self.updateTransactionListbox()
-                return
-        self.transaction.append([product,amount, pricePerItem])
-        self.updateTransactionListbox()
 
 
     def updateCategoryListbox(self):
