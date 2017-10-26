@@ -1,10 +1,14 @@
 from main import *
-import tkinter, guiNewTransaction, guiCategories
+import tkinter
+import tkinter.simpledialog as simpledialog
+import guiNewTransaction
+import guiCategories
 
 class topLevelWindow:
     def __init__(self, master):
         self.master = master
-        self.master.wm_attributes('-fullscreen', 'true')
+        self.master.title("Bar Kassa Systeem")
+        #self.master.wm_attributes('-fullscreen', 'true')
 
         menuFrame = tkinter.Frame(self.master, bg='lightblue')
         contentFrame = tkinter.Frame(self.master)
@@ -28,8 +32,6 @@ class topLevelWindow:
         self.content = buildContent(contentFrame)
         #self.branding = buildBranding(brandingFrame)
         self.footer = buildFooter(footerFrame)
-
-
 
 
 class buildMenu:
@@ -69,10 +71,12 @@ class buildContent(topLevelWindow):
             for widget in self.master.winfo_children():
                 widget.destroy()
 
+
 class buildFooter:
     def __init__(self,master):
         text = 'Dit programma is geschreven in opdracht van Hogeschool Utrecht, door studenten Nico, Patrick, Lars en Bart uit klas V1H. \u00a9 2017'
         tkinter.Label(master,text=text).pack()
+
 
 root = tkinter.Tk()
 my_gui = topLevelWindow(root)
