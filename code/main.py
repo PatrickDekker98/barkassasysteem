@@ -2,7 +2,7 @@ import sqlite3 as sql
 import tkinter,datetime,telepot
 import tkinter.simpledialog as simpledialog
 
-db = '../database/barkassasysteem.db'
+db = '../barkassasysteem.db'
 conn = sql.connect(db)
 cursor = conn.cursor()
 
