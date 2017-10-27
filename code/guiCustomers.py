@@ -1,8 +1,9 @@
 from main import *
 from customerFuncs import *
 
-#dit maakt een customer frame
+
 class customers:
+    'Creates a customersFrame'
     def __init__(self, master):
         self.master = master
         
@@ -14,8 +15,9 @@ class customers:
         customerAddFrame.grid(column = 6, row = 0, columnspan = 2, padx = 20, pady = 20)
         self.addFrame = addCustomerFrame(customerAddFrame)
 
-#dit maakt een entry veld voor nieuwe klant
+
 class addCustomerFrame:
+    'Creates an entry field for a new customer'
     def __init__(self, master):
         tkinter.Label(master,
                 text = "Voeg nieuwe klanten toe:",
@@ -54,8 +56,7 @@ class addCustomerFrame:
                 bg = "green",
                 command = lambda: self.confirmAddition()).grid(row = 5, column = 0, columnspan = 2)
 
-    #dit controleerd of de voornaam of achternaam wel of niet leeg is
-    #het geeft ook een popup als het wel of niet gelukt is
+    #Checks if firstname or lastname is empty
     def confirmAddition(self):
         firstName = self.firstNameEntry.get()
         insertion = self.insertionEntry.get()
@@ -80,8 +81,9 @@ class addCustomerFrame:
                     font = ('Arial', 15),
                     height = 2,).pack()
 
-#dit maakt een tabel voor de klanten plus drie knoppen om ze te bewerken
+
 class customerTable:
+    'Creates a table for the customer, plus three buttons to alter their information/data'
     def __init__(self, master):
         idColumn       = 1
         nameColumn     = 2
@@ -99,7 +101,7 @@ class customerTable:
         tkinter.Label(master, text = "telegram").grid(column = telegramColumn, row = 1, sticky = "W")
 
         count = 2
-        for customerKey in customerDict:
+        for customerKey in customerDict:    # Creates Labels and buttons for all customers in the database
             cmdDelete = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.confirmUnset(master, customerList, customerKey)
             cmdTelegram = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.addTelegramId(master, customerList, customerKey)
             cmdEdit = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.confirmEdit(master, customerList, customerKey)
@@ -146,8 +148,9 @@ class customerTable:
             
             count += 1
 
-    #maakt een popup die vraagt om een telegramid die niet leeg is en 9 karakters lang is 
+
     def addTelegramId(self, master, customerList, customerKey):
+        'Pops up a message, asking for a telegramID, which compells to certain requirements'
         popup = tkinter.Toplevel()
         popup.wm_title("Confirmation")
         popup.geometry('500x100')
@@ -179,13 +182,15 @@ class customerTable:
                 width = 10, 
                 command = lambda: self.addTelAndDestroy(popup, customerKey)).grid(row = 2, column = 4)
 
-    #callt naar de telegram id add functie en sluit de popup
+
     def addTelAndDestroy(self, popup, customerKey):
+        'Calls the telegram ID addfunction, and closes the popup'
         self.telegramIdAdd(customerKey)
         popup.destroy()
 
-    #dit controleerd de input van de entry velden en start de functie addTelegramId die met de database communiseerd 
+
     def telegramIdAdd(self, customerKey):
+        'Performs some check on the input on the entryfields and calls addTelegramId, which communicates with the database'
         telegramId = self.telegramIdEntry.get()
         if telegramId == '':
             popup = tkinter.Toplevel()
@@ -216,8 +221,9 @@ class customerTable:
                     font = ('Arial', 15),
                     height = 2,).pack()
     
-    #deze functie vraagt om de nieuwe naam van de klant, en om een confirmatie  
+
     def confirmEdit(self, master, customerList, customerKey):
+        'Asks for the new name of the customer, then confirms it'
         popup = tkinter.Toplevel()
         popup.wm_title("Confirmation")
         popup.geometry('500x100')
@@ -263,13 +269,15 @@ class customerTable:
                 width = 10, 
                 command = lambda: self.editAndDestroy(popup, customerKey)).grid(row = 3, column = 4)
 
-    #deze functie roept twee functies 
+
     def editAndDestroy(self, popup, customerKey):
+        'Function to call 2 other functions'
         self.customerEdit(customerKey)
         popup.destroy()
 
-    #customerEdit checkt of firstname en lastName niet leeg zijn, en geeft een schermpje terug of het wel of niet gelukt is
+
     def customerEdit(self, customerKey):
+        'Checks if firstname and lastname arent empty, and returns lets user know if it succeeded'
         firstName = self.firstNameEntry.get()
         insertion = self.insertionEntry.get()
         lastName  = self.lastNameEntry.get()
@@ -293,8 +301,9 @@ class customerTable:
                     font = ('Arial', 15),
                     height = 2,).pack()
         
-    #deze functie vraagt of je zeker weet of je de klant wil verwijderen
+
     def confirmUnset(self, master, customerList, customerKey):
+        'Checks if you really want to remove the customer'
         popup = tkinter.Toplevel()
         popup.wm_title("Confirmation")
         if customerList[2] != None:
@@ -315,8 +324,9 @@ class customerTable:
                 height = 1, 
                 width = 10, 
                 command = lambda: self.deactivateAndDestroy(popup, customerKey)).grid(row = 3, column = 0)
-    #deze functie roept twee functies aan
+
     def deactivateAndDestroy(self, popup, customerKey):
+        'Function to call 2 other functions'
         deactivateCustomer(customerKey, True)
         popup.destroy()
 

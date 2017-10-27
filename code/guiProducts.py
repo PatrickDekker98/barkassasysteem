@@ -2,7 +2,9 @@ from main import *
 import products, discounts, categories
 
 class productMain:
+    'The products GUI gets build'
     def __init__(self, master):
+        'Main Frames get created and are added to master'
         self.master = master
 
         self.contentFrame = tkinter.Frame(self.master)
@@ -13,11 +15,11 @@ class productMain:
 
 
     def buildMenuFrame(self, master):
+        'The internal main menu gets created and is added to the screen'
         self.resetContent()
 
         productsMenuFrame = tkinter.Frame(master)
         discountsMenuFrame = tkinter.Frame(master)
-
 
         tkinter.Button(productsMenuFrame, text='Producten', font=('Arial', 15), height=2, width=15, bg='lightblue', command=self.viewProduct).pack()
         tkinter.Button(discountsMenuFrame, text='Kortingen', font=('Arial', 15), height=2, width=15, bg='lightblue', command=self.viewDiscount).pack()
@@ -25,14 +27,16 @@ class productMain:
         productsMenuFrame.grid(column=0,row=0)
         discountsMenuFrame.grid(column=1,row=0)
 
+
     def viewProduct(self):
+        'Resets content and shows all [active] products on the screen'
         self.resetContent()
 
         tkinter.Label(self.contentFrame, text='{:103}{:30}{:44}{:12}'.format('Product', 'Prijs', 'Start', 'Eind')).grid(column=0,row=0, sticky='w', columnspan=4)
         self.productsListbox = tkinter.Listbox(self.contentFrame, font='consolas', width=200)
         self.productsListbox.grid(column=0,row=1, columnspan=4)
         currentProducts = products.fetchProducts()
-        for p in currentProducts:
+        for p in currentProducts:   #   Each active product is inserted to the ProductListBox
             item = '{:30}€{:<8.2f}{:13}{:20}'.format(str(p[0]), p[1], str(p[2])[:10], str(p[3])[:10])
             self.productsListbox.insert('end', item)
         tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addProduct).grid(column=1,row=2)
@@ -40,6 +44,7 @@ class productMain:
 
 
     def addProduct(self):
+        'Gives the user the options needed to create a new product and to add it to the database'
         self.resetContent()
         productInputFrame = tkinter.Frame(self.contentFrame)
         priceInputFrame = tkinter.Frame(self.contentFrame)
@@ -91,11 +96,13 @@ class productMain:
 
 
     def setSelectedCategory(self, value):
+        'Sets the new products to a category'
         self.selectedCategory = value
         self.selectedCategoryId = categories.getCategoryId(value)
 
 
     def addProductFinish(self):
+        'Checks validity of all inserted data, then writes everything to the database'
         if self.productNameEntry.get() == '':
             tkinter.messagebox.showwarning("Ongelidge invoer!","Voer een productnaam in!")
             return
@@ -112,6 +119,7 @@ class productMain:
         self.viewProduct()
 
     def alterProduct(self):
+        'Gives the user the options needed to alter a product in the database'
         productId = self.productsListbox.index('active') + 1
         self.resetContent()
 
@@ -160,27 +168,24 @@ class productMain:
         tkinter.Button(self.contentFrame, text='Pas aan', bg='lightgreen', command=lambda: self.alterProductFinish(productId)).grid(column=2,row=0,sticky='s')
 
     def alterProductFinish(self, productId):
+        'checks all inputted data before writing the changes to the database'
         if self.productDatetimeEndEntry.get() == '' and self.priceValueEntry.get() == '' and self.priceDatetimeStartEntry.get() == '' and self.selectedCategoryId == products.lookupProductCategory(productId):
             tkinter.messagebox.showwarning("Ongeldige invoer!", "Vul iets in om aan te passen!")
             return
-
         if self.productDatetimeEndEntry.get() != '':
             products.setProductDatetimeEnd(productId, self.productDatetimeEndEntry.get())
-
         if self.priceValueEntry.get() != '':
                 if self.priceDatetimeStartEntry.get() != '':
                     products.setNewProductPrice(productId, self.priceValueEntry.get(), self.priceDatetimeStartEntry.get(),self.priceDatetimeEndEntry.get())
                 else:
                     tkinter.messagebox.showwarning("Ongeldige invoer!", "Om de prijs aan te passen, dient u ook een startdatum in te voeren!")
                 return
-
         if self.priceDatetimeStartEntry.get() != '':
                 if self.priceValueEntry.get() != '':
                     None
                 else:
                     tkinter.messagebox.showwarning("Ongeldige invoer!", "U heeft de startdatum voor een nieuwe prijs ingegeven, zonder een waarde in te geven voor deze nieuwe prijs!")
                 return
-
         if self.selectedCategoryId != products.lookupProductCategory(productId):
             products.setNewProductCategory(productId,self.selectedCategoryId)
 
@@ -188,13 +193,14 @@ class productMain:
 
 
     def viewDiscount(self):
+        'Shows all discounts on the screen, plus some buttons to give access to new functions'
         self.resetContent()
 
         tkinter.Label(self.contentFrame, text='{:103}{:30}{:30}{:32}{:45}{:28}'.format('Product', 'Prijs', 'Korting', 'Nieuwe prijs', 'Startdatum', 'Einddatum')).grid(column=0,row=0, sticky='w', columnspan=4)
         discountsListbox = tkinter.Listbox(self.contentFrame, font='consolas', width=200)
         discountsListbox.grid(column=0,row=1, columnspan=4)
         currentDiscounts = discounts.fetchDiscounts()
-        for d in currentDiscounts:
+        for d in currentDiscounts:  #   Inserts all active discounts to the discount listbox
             item = '{:30}€{:<8.2f}{:10}€{:<10.2f}{:15}{:}'.format(str(d[0]), d[1], str(str(d[2]*100)+'%'), (d[1]*d[2]), str(d[3])[:10], str(d[4])[:10])
             discountsListbox.insert('end', item)
         tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addDiscount).grid(column=1, row=2)
@@ -202,6 +208,7 @@ class productMain:
 
 
     def addDiscount(self):
+        'Gives the user the options needed to create a new discount for an existing product'
         self.resetContent()
         productInputFrame = tkinter.Frame(self.contentFrame)
         discountInputFrame = tkinter.Frame(self.contentFrame)
@@ -240,11 +247,15 @@ class productMain:
 
         tkinter.Button(self.contentFrame, text='Voeg Toe', bg='lightgreen', command=self.addDiscountFinish).grid(column=2,row=0,sticky='s')
 
+
     def setSelectedProduct(self, value):
+        'Sets the selected product to a different variable'
         self.selectedProduct = value
         self.selectedProductId = products.lookupProductId(self.selectedProduct)
 
+
     def addDiscountFinish(self):
+        'checks the inputted data and calls a function to write them to the database'
         if int(self.discountValueEntry.get()) > 1:
             discountValue = int(self.discountValueEntry.get()) / 100
         elif self.discountValueEntry.get() < 1:
@@ -257,7 +268,9 @@ class productMain:
             discounts.addDiscount(self.selectedProductId, discountValue, self.discountDatetimeStartEntry.get(), self.discountDatetimeEndEntry.get())
         self.viewDiscount()
 
+
     def alterDiscount(self , discountId):
+        'Gives the user the options needed to alter a discount in the database'
         self.resetContent()
 
         discountInputFrame = tkinter.Frame(self.contentFrame)
@@ -275,16 +288,21 @@ class productMain:
         print(discountId)
         tkinter.Button(self.contentFrame, text='Pas aan', bg='lightgreen', command=lambda: self.alterDiscountFinish(discountId, discountDatetimeEndEntry.get())).grid(column=1, row=0, sticky='s')
 
+
     def alterDiscountFinish(self,discountId, datetimeEnd):
+        'Checks calls a function to write inputted data to the database'
         discounts.setDiscountEnddate(discountId, datetimeEnd)
         self.viewDiscount()
 
+
     def resetContent(self):
+        'Resets content in mainframe, "contentFrame"'
         for widget in self.contentFrame.winfo_children():
             widget.destroy()
 
 
     def currentDate(self, inputfield):
+        'writes current date to supplied inputfield'
         inputfield.insert('end', str(datetime.datetime.today())[:19])
 
 

@@ -1,4 +1,5 @@
 from main import *
+import categories
 
 
 class categoriesOverview(tkinter.Frame):
