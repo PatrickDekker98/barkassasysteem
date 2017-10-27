@@ -14,7 +14,6 @@ class topLevelWindow:
 
         menuFrame = tkinter.Frame(self.master, bg='lightblue')
         contentFrame = tkinter.Frame(self.master)
-        #brandingFrame = tkinter.Frame(self.master, bg='lightblue')
         footerFrame = tkinter.Frame(self.master)
 
         self.master.columnconfigure(0, minsize=50, weight=2)
@@ -25,15 +24,17 @@ class topLevelWindow:
         self.master.rowconfigure(1, weight=85)
         self.master.rowconfigure(2, minsize=50, weight=5)
 
-        menuFrame.grid(column=1,row=0,columnspan=2)
+        menuFrame.grid(column=1,row=0,columnspan=2, sticky='new')
         contentFrame.grid(column=1,row=1, sticky='news')
         #brandingFrame.grid(column=2,row=1, sticky='news')
-        footerFrame.grid(column=1,row=2,columnspan=2, sticky='news')
+        footerFrame.grid(column=1,row=2,columnspan=2, sticky='ews')
 
         self.menu = buildMenu(menuFrame)
         self.content = buildContent(contentFrame)
         #self.branding = buildBranding(brandingFrame)
         self.footer = buildFooter(footerFrame)
+
+        self.content.callTransaction()
 
 
 class buildMenu:
@@ -48,7 +49,7 @@ class buildMenu:
         tkinter.Button(master, width=200, height=3, font=font, bg='lightblue',text='Categorieën', command=lambda: my_gui.content.callCategories()).grid(column=3,row=0, sticky='news')
 
 
-class buildContent(topLevelWindow):
+class buildContent:
     def __init__(self,master):
         self.master = master
 
