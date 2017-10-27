@@ -1,6 +1,5 @@
 from main import *
 from customerFuncs import *
-import tkinter
 
 class customers:
     def __init__(self, master):

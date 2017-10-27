@@ -2,7 +2,7 @@ from main import *
 
 def returnAllCustomers():
     customersData = cursor.execute('SELECT firstName, insertion, lastName, customerId FROM customer')
-    customers    = dict()
+    customers = dict()
     for customer in customersData:
         customers[customer[3]] = [customer[0], customer[2], customer[1]]
     

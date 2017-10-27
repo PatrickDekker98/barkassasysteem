@@ -21,6 +21,10 @@ def calculateProductPrice(productid):
         productPrice = cursor.fetchone()
         return productPrice[0]
 
+def calculateProductPriceWODiscount(productid):
+    cursor.execute('''SELECT value FROM price WHERE productId = ? AND datetimeStart <= datetime('now', 'localtime') AND (datetimeEnd >= datetime('now', 'localtime') OR datetimeEnd IS NULL)''',(productid,))
+    return cursor.fetchone()[0]
+
 def fetchProducts():
     cursor.execute("SELECT pro.name, pri.value, pri.datetimeStart, pri.datetimeEnd FROM product pro INNER JOIN price pri ON pro.productId = pri.productId  WHERE pri.datetimeStart <= datetime('now', 'localtime') AND (pri.datetimeEnd ISNULL OR pri.datetimeEnd > datetime('now', 'localtime'))")
     return cursor.fetchall()
