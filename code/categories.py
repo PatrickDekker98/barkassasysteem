@@ -10,6 +10,9 @@ def getCategory(categoryId):
     cursor.execute("SELECT * FROM category WHERE categoryId = ? AND datetimeStart <= datetime('now', 'localtime') AND (datetimeEnd ISNULL OR datetimeEnd > datetime('now', 'localtime'))", [categoryId])
     return cursor.fetchone()
 
+def getCategoryId(categoryName):
+    cursor.execute("SELECT categoryId FROM category WHERE name = ?",[categoryName])
+    return cursor.fetchone()[0]
 
 def addCategory(name):
     cursor.execute("INSERT INTO category (name) VALUES (?)", [name])
@@ -29,7 +32,6 @@ def deleteCategory(categoryId):
     cursor.execute("UPDATE category SET datetimeEnd = datetime('now', 'localtime') WHERE categoryId = ?", [categoryId])
     conn.commit()
     return cursor.rowcount == 1
-
 
 # print(deleteCategory(4))
 # print(getCategories())
