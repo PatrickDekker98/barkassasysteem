@@ -41,7 +41,7 @@ class buildMenu:
         tkinter.Button(master, width=200, height=3, font=font, bg='lightblue', text='Transaction', command=lambda: my_gui.content.callTransaction()).grid(column=0,row=0, sticky='news')
         tkinter.Button(master, width=200, height=3, font=font, bg='lightblue',text='Klanten', command=lambda: my_gui.content.callCustomers()).grid(column=1,row=0, sticky='news')
         tkinter.Button(master, width=200, height=3, font=font, bg='lightblue',text='Producten', command=lambda: my_gui.content.callProducts()).grid(column=2,row=0, sticky='news')
-        tkinter.Button(master, width=200, height=3, font=font, bg='lightblue',text='Categorieën', command=lambda: my_gui.content.callCategories()).grid(column=3,row=0, sticky='news')
+        tkinter.Button(master, width=200, height=3, font=font, bg='lightblue',text='Categorieen', command=lambda: my_gui.content.callCategories()).grid(column=3,row=0, sticky='news')
 
 
 class buildContent:
