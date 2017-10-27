@@ -1,5 +1,5 @@
 import sqlite3 as sql
-import tkinter,datetime,customerFuncs,telepot
+import tkinter,datetime,telepot
 import tkinter.simpledialog as simpledialog
 
 db = '../database/barkassasysteem.db'
