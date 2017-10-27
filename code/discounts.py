@@ -1,10 +1,14 @@
 from main import *
 
+
 def fetchDiscounts():
+    'Fetches all active discounts from the database'
     cursor.execute("SELECT pro.name, pri.value, dis.percentage, dis.datetimeStart, dis.datetimeEnd, dis.discountId FROM product pro INNER JOIN price pri ON pro.productId = pri.productId INNER JOIN discount dis ON pro.productId = dis.productId WHERE pri.datetimeStart <= datetime('now', 'localtime') AND (pri.datetimeEnd ISNULL OR pri.datetimeEnd > datetime('now', 'localtime'))")
     return cursor.fetchall()
 
+
 def addDiscount(productId, discountPercentage, discountDatetimeStart, discountDatetimeEnd):
+    'Adds a new discount to the database. Needs to be provided with productId, Percentage Start date and optionally End date'
     if discountDatetimeEnd == '':
         discountDatetimeEnd = None
     cursor.execute(''' SELECT EXISTS(SELECT * FROM discount WHERE productId = ? AND datetimeStart <= ? AND (datetimeEnd ISNULL OR datetimeEnd >= ?))''', [productId, discountDatetimeStart, discountDatetimeEnd])
@@ -15,9 +19,9 @@ def addDiscount(productId, discountPercentage, discountDatetimeStart, discountDa
             return False
     cursor.execute('''INSERT INTO discount(productId, percentage, datetimeStart, datetimeEnd) VALUES(?,?,?,?)''', [productId, discountPercentage, discountDatetimeStart, discountDatetimeEnd ])
     conn.commit()
-    return True
+
 
 def setDiscountEnddate(discountId, discountDateTimeEnd):
+    '"Removes" a discount from the database by setting the Enddate to today'
     cursor.execute('''UPDATE discount SET datetimeEnd = ? WHERE discountId = ?''', [discountDateTimeEnd,discountId])
     conn.commit()
-    return True
