@@ -1,6 +1,7 @@
 from main import *
 
 def verifyCustomer(customerId, verificationTypeId, reference):
+    'Verifies if customer ID, verificationType and its reference, all line up in the database'
     try:
         data = cursor.execute("SELECT reference FROM verificationMethod WHERE customerId = ? AND verificationTypeId = ? AND datetimeStart <= datetime('now', 'localtime') AND (datetimeEnd ISNULL OR datetimeEnd > datetime('now', 'localtime'))", (customerId, verificationTypeId))
         for row in data:

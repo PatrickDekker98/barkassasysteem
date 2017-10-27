@@ -1,7 +1,7 @@
 #from main import *
 
 def write2csv(telegramId, msg):
-    'schrijft telegram ID en bericht weg naar een CSV file'
+    'Writes a telegram ID and the message to a CSV file'
 
     import csv
 

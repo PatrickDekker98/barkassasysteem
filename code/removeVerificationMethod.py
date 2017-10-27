@@ -2,10 +2,10 @@ from main import *
 
 
 def removeVerificationMethod(verificationMethodId):
+    'Removes a verifiactionmethod from the database'
     try:
         cursor.execute("UPDATE verificationMethod SET datetimeEnd = (datetime('now','localtime')) WHERE verificationMethodId = ?", (verificationMethodId,))
         conn.commit()
-        printGui("Verification method succesfully removed!")
         return cursor.rowcount == 1
     except:
         raise ValueError("Verification method could not be removed from the database. Please try again.")
