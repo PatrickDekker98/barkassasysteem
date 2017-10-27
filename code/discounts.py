@@ -7,7 +7,7 @@ def fetchDiscounts():
 def addDiscount(productId, discountPercentage, discountDatetimeStart, discountDatetimeEnd):
     if discountDatetimeEnd == '':
         discountDatetimeEnd = None
-    cursor.execute(''' SELECT EXISTS(SELECT * FROM discount WHERE productId = ? AND datetimeStart <= ? AND (datetimeEnd ISNULL OR datetimeEnd >= ?''', [productId, discountDatetimeStart, discountDatetimeEnd])
+    cursor.execute(''' SELECT EXISTS(SELECT * FROM discount WHERE productId = ? AND datetimeStart <= ? AND (datetimeEnd ISNULL OR datetimeEnd >= ?))''', [productId, discountDatetimeStart, discountDatetimeEnd])
     if cursor.fetchall == 1:
         if tkinter.messagebox.askyesno("Bestaande korting gevonden!", "Binnen de door u aangeven periode, is voor dit product al een korting actief. Wilt u deze korting beeïndigen?"):
             cursor.execute('''UPDATE discount SET datetimeEnd = ? WHERE discountId = (SELECT discountId FROM discount WHERE productId = ? AND datetimeStart <= ? AND (datetimeEnd ISNULL OR datetimeEnd >= ?) ''', discountDatetimeStart, productId,discountDatetimeStart,discountDatetimeEnd)
