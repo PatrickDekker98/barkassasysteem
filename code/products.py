@@ -43,6 +43,8 @@ def fetchProductsPerCategory(categories):
 
 def addProduct(productName, productDatetimeStart, priceValue, priceDatetimeStart, categoryId, productDatetimeEnd=None, priceDatetimeEnd=None):
     'Adds a new product'
+    if categoryId == None:
+        categoryId = 1
     cursor.execute(''' INSERT INTO product(name,datetimeStart, categoryId) VALUES(?,?,?)''', [productName, productDatetimeStart, categoryId])
     cursor.execute('''SELECT productId FROM product WHERE name = ?''', [productName,])
     id = cursor.lastrowid

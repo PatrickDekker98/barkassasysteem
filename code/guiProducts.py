@@ -122,7 +122,6 @@ class productMain:
         productDateTimeEnd = self.priceDatetimeEndEntry.get()
         productCategoryId = self.selectedCategoryId
         products.addProduct(productName, productDateTimeStart, productPrice, productDateTimeEnd, productCategoryId)
-#        products.addProduct(self.productNameEntry.get(), self.productDatetimeStartEntry.get(), self.priceValueEntry.get(), self.priceDatetimeStartEntry.get(), self.selectedCategoryId)
         telegramMsg = 'Beste klant we hebben een nieuw product; ' + productName + ' vanaf ' + productDateTimeStart + ' zal dit product beschikbaar zijn'
         telegramSend.sendToAll(telegramMsg)
         self.viewProduct()
