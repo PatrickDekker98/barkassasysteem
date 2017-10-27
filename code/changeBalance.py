@@ -1,6 +1,9 @@
+# Update het saldo in de database
+# ~ Nico van Bentum
+
 from main import *
 
-def raiseBalance(customerId):
+def raiseBalance(customerId, amountIn):
     'berekent tijd in epoch, vraagt het huidige balans op van de klant, berekent nieuwe balans. schrijft naar de db.'
 
     epoch = datetime.datetime(1970, 1, 1)
@@ -8,7 +11,7 @@ def raiseBalance(customerId):
 
     delta_time = int((i - epoch).total_seconds()) #tijd in epoch
 
-    amountIn = askAmount()
+    #amountIn = askAmount()
 
     cursor.execute("SELECT balance FROM customer WHERE customerId = ?", customerId)
     customerBalance = cursor.fetchone()[0]
@@ -22,7 +25,7 @@ def raiseBalance(customerId):
     conn.close()
 
 
-def askAmount():
+def askAmount(): #optionele dummy functie
     'fetched de balans verhoging van een GUI entry element'
 
     amountInput = Entry.get()
