@@ -1,9 +1,8 @@
 import sqlite3 as sql
-import tkinter
+import tkinter,datetime,customerFuncs,telepot
 import tkinter.simpledialog as simpledialog
-import datetime
 
-db = '../barkassasysteem.db'
+db = '../database/barkassasysteem.db'
 conn = sql.connect(db)
 cursor = conn.cursor()
 
