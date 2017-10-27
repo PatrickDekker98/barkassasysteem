@@ -10,5 +10,3 @@ def sendToAll(msg) :
     for telegramId in telegramIds:
         write2csv(telegramId, msg)
         bot.sendMessage(telegramId, str(msg))
-
-sendToAll('hello there test')
