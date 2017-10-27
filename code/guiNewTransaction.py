@@ -32,16 +32,28 @@ class newTransaction:
         self.selectedProductLabel.pack(side='left')
         self.selectedProduct = None
 
+        r = 1
+        c = 0
         self.categoryProductsDict = products.fetchProductsPerCategory(categories.getCategories())
         for category in self.categoryProductsDict:
             cmd = lambda products = self.categoryProductsDict[category]: self.productButtons(productsFrame, products)
-            tkinter.Button(categoryFrame, text=category[1], font=('Arial', 15), height=2, width=15, command=cmd, bg='lightblue').pack(side='left')
+            tkinter.Button(categoryFrame, text=category[1], font=('Arial', 15), height=2, width=15, command=cmd, bg='lightblue').grid(row=r, column=c)
+            c += 1
+            if c > 2:
+                c = 0
+                r += 1
+
+    def resetContent(self,master):
+        for widget in master.winfo_children():
+            widget.destroy()
 
     def productButtons(self, master, products):
+        self.resetContent(master)
         r = 1
         c = 0
 
         for product in products:
+            print(product)
             cmd = lambda id=product[0]: self.set(id)
             tkinter.Button(master, text=product[1][:13], font=('Arial', 15), height=2, width=15, command=cmd).grid(row=r, column=c)
             c += 1
@@ -57,7 +69,11 @@ class newTransaction:
 
 
     def productsReturnValue(self):
-        value = self.selectedProduct
+        try:
+            value = int(self.selectedProduct)
+        except:
+            messageBox('Geen product geselecteerd','U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.','error')
+            return
         self.selectedProduct = None
         self.selectedProductLabel.config(text='')
         return value
@@ -67,7 +83,7 @@ class newTransaction:
         self.total = 0
         self.overview = tkinter.Listbox(master, width=55, font='consolas',)
         self.overview.grid(column=0, row=1, columnspan=4)
-        tkinter.Label(master, text="{:58}     {:4}     {:7}".format('Product', 'Aantal', 'Prijs'), font=('Arial', 10)).grid(column=0, row=0,columnspan=2, sticky='w')
+        tkinter.Label(master, text="{:73}     {:9}     {:7}".format('Product', 'Aantal', 'Prijs'), font=('Arial', 10)).grid(column=0, row=0,columnspan=2, sticky='w')
         self.totalLabel = tkinter.Label(master,text='€ {:.2f}'.format(self.total), font=('Arial', 20), height=1, width=10)
         self.totalLabel.grid(column=1, row=2)
         tkinter.Button(master, text="+", font=('Arial', 20), height=1, width=10, bg='lightgreen', command=self.addProduct).grid(column=0, row=3)
@@ -77,6 +93,8 @@ class newTransaction:
     def addProduct(self):
         product = self.productsReturnValue()
         amount = self.numpadReturnValue()
+
+        print(product)
         if product == None:
             messageBox('Geen product geselecteerd', 'U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.', 'error')
             return
@@ -84,6 +102,7 @@ class newTransaction:
             messageBox('Geen aantal gekozen', 'U heeft geen aantal aangegeven. Geef aan hoeveelheid aan voordat u dit toe wilt voegen aan de transactie', 'error')
             return
 
+        print(products.calculateProductPrice(6))
         pricePerItem = products.calculateProductPrice(product)
         for bestaandProduct in self.transaction:
             if product == bestaandProduct[0]:
@@ -107,6 +126,7 @@ class newTransaction:
     def calculateTotal(self):
         self.total = 0
         for product in self.transaction:
+            print(product)
             self.total += (product[1] * product[2])
         self.totalLabel.config(text='€ {:.2f}'.format(self.total))
 
@@ -149,7 +169,7 @@ class newTransaction:
         self.amount.config(text=self.numpadValue)
 
     def numpadReturnValue(self):
-        value = self.numpadValue
+        value = int(self.numpadValue)
         self.numpadValue = str()
         self.amount.config(text=self.numpadValue)
         return int(value)
