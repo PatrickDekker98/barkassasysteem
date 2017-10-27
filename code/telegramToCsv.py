@@ -9,6 +9,3 @@ def write2csv(telegramId, msg):
         writer = csv.writer(csvfile, delimiter=';')
 
         writer.writerow([telegramId, msg])
-
-#functie test
-write2csv(22, "neenuniet")
