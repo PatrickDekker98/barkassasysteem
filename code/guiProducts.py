@@ -40,8 +40,8 @@ class productMain:
         for p in currentProducts:
             item = '{:30}{:<8.2f}{:13}{:20}'.format(str(p[0]), p[1], str(p[2])[:10], str(p[3]))
             self.productsListbox.insert('end', item)
-        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addProduct).grid(column=2,row=2)
-        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Aanpassen', bg='yellow', command=self.alterProduct).grid(column=3,row=2)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addProduct).grid(column=1,row=2)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Aanpassen', bg='yellow', command=self.alterProduct).grid(column=2,row=2)
 
 
     def addProduct(self):
@@ -160,14 +160,60 @@ class productMain:
         for p in currentProducts:
             item = '{:30}{:<8.2f}{:13}{:20}'.format(str(p[0]), p[1], str(p[2])[:10], str(p[3]))
             productsListbox.insert('end', item)
-        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addDiscount).grid(column=2, row=2)
-        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Aanpassen', bg='yellow',command=self.alterDiscount).grid(column=3, row=2)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Toevoegen', bg='lightgreen', command=self.addDiscount).grid(column=1, row=2)
+        tkinter.Button(self.contentFrame, font=('Arial', 20), height=1, width=10, text='Aanpassen', bg='yellow',command=self.alterDiscount).grid(column=2, row=2)
 
 
     def addDiscount(self):
         self.resetContent()
+        productInputFrame = tkinter.Frame(self.contentFrame)
+        discountInputFrame = tkinter.Frame(self.contentFrame)
 
+        productInputFrame.grid(column=0,row=0,sticky='nw')
+        discountInputFrame.grid(column=1,row=0,sticky='ne')
 
+        tkinter.Label(productInputFrame, text="Product:", font=('Arial', 20)).grid(column=0, row=0, columnspan=3,sticky='nw')
+        tkinter.Label(productInputFrame, text='Naam').grid(column=0, row=1, sticky='w')
+        productInputFrame.columnconfigure(3, minsize=50)
+
+        productsList = []
+        for product in products.fetchProducts():
+            productsList.append(product[0])
+        self.selectedProduct = tkinter.StringVar()
+        self.selectedProduct.set(productsList[0])
+        self.selectedProductId = products.lookupProductId(self.selectedProduct.get())
+
+        self.productSelection = tkinter.OptionMenu(productInputFrame, self.selectedProduct, *productsList, command=self.setSelectedProduct)
+        self.productSelection.grid(column=1, row=1)
+
+        tkinter.Button(discountInputFrame, text='Vandaag', command=lambda: self.currentDate(self.discountDatetimeStartEntry)).grid(column=2, row=2)
+
+        tkinter.Label(discountInputFrame, text="Korting:", font=('Arial', 20)).grid(column=0, row=0, columnspan=3,sticky='w')
+        tkinter.Label(discountInputFrame, text='Percentage').grid(column=0, row=1, sticky='w')
+        tkinter.Label(discountInputFrame, text='Van').grid(column=0, row=2, sticky='w')
+        tkinter.Label(discountInputFrame, text='Tot').grid(column=0, row=3, sticky='w')
+        discountInputFrame.columnconfigure(3, minsize=50)
+
+        self.discountValueEntry = tkinter.Entry(discountInputFrame)
+        self.discountDatetimeStartEntry = tkinter.Entry(discountInputFrame)
+        self.discountDatetimeEndEntry = tkinter.Entry(discountInputFrame)
+        self.discountValueEntry.grid(column=1, row=1)
+        self.discountDatetimeStartEntry.grid(column=1, row=2)
+        self.discountDatetimeEndEntry.grid(column=1, row=3)
+
+        tkinter.Button(self.contentFrame, text='Voeg Toe', bg='lightgreen', command=self.addDiscountFinish).grid(column=2,row=0,sticky='s')
+
+    def setSelectedProduct(self, value):
+        self.selectedProduct = value
+        self.selectedProductId = products.lookupProductId(self.selectedProduct)
+
+    def addDiscountFinish(self):
+        if self.discountValueEntry.get() == '' or self.discountDatetimeStartEntry.get() == '':
+            tkinter.messagebox.showwarning("Ongeldige invoer!", "Zorg dat minimaal het percentage en de startdatum ingevuld zijn!")
+            return
+        else:
+            discounts.addDiscount(self.selectedProductId, self.discountValueEntry.get(), self.discountDatetimeStartEntry.get(), self.discountDatetimeEndEntry.get())
+        self.viewProduct()
 
     def alterDiscount(self):
         self.resetContent()
