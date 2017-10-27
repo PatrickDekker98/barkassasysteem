@@ -5,6 +5,9 @@ def lookupProductName(id):
     productname = cursor.fetchone()[0]
     return productname
 
+def lookupProductId(productname):
+    cursor.execute('''SELECT productId FROM Product WHERE name = ?''', [productname,])
+    return cursor.fetchone()[0]
 
 def calculateProductPrice(productid):
     epochTime = str(datetime.date.today())
