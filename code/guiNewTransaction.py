@@ -109,10 +109,10 @@ class newTransaction:
         amount = self.numpadReturnValue()
 
         if product == None:
-            messageBox('Geen product geselecteerd', 'U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.', 'error')
+            tkinter.messagebox.showwarning('Geen product geselecteerd', 'U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.')
             return
         elif amount == str():
-            messageBox('Geen aantal gekozen', 'U heeft geen aantal aangegeven. Geef aan hoeveelheid aan voordat u dit toe wilt voegen aan de transactie', 'error')
+            tkinter.messagebox.showwarning('Geen aantal gekozen', 'U heeft geen aantal aangegeven. Geef aan hoeveelheid aan voordat u dit toe wilt voegen aan de transactie')
             return
         pricePerItem = products.calculateProductPrice(product)
         for bestaandProduct in self.transaction:    #   If the newproduct already exists in the transaction, the amounts will be added up together
