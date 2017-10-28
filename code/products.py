@@ -47,7 +47,7 @@ def addProduct(productName, productDatetimeStart, priceValue, priceDatetimeStart
         categoryId = 1
     cursor.execute(''' INSERT INTO product(name,datetimeStart, categoryId) VALUES(?,?,?)''', [productName, productDatetimeStart, categoryId])
     cursor.execute('''SELECT productId FROM product WHERE name = ?''', [productName,])
-    id = cursor.lastrowid
+    id = cursor.fetchone()[0]
     cursor.execute(''' INSERT INTO price( productId, datetimeStart, value) VALUES(?,?,?)''', [id, priceDatetimeStart,priceValue])
     if productDatetimeEnd != None: # If Enddate was specified, add Enddate to database
         cursor.execute('''UPDATE product SET datetimeEnd = ? WHERE name = ?''', [productDatetimeEnd, productName])
