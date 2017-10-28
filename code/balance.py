@@ -53,6 +53,7 @@ def correctBalance(customerId):
 def writeNewTransaction(customerId, transaction):
     'writes a new transaction to the database'
     if checkBalance(customerId):
+        print('if')
         customerBalance = getBalanceFromCustomer(customerId)
         total = 0
         for product in transaction:
@@ -69,5 +70,6 @@ def writeNewTransaction(customerId, transaction):
         correctBalance(customerId)
         return True
     else:
+        print('else')
         correctBalance(customerId)
         return False

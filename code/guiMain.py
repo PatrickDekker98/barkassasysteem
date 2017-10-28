@@ -7,7 +7,7 @@ class topLevelWindow:
     def __init__(self, master):
         self.master = master
         self.master.title("Bar Kassa Systeem")
-        #self.master.wm_attributes('-fullscreen', 'true')
+        self.master.wm_attributes('-fullscreen', 'true')
 
         menuFrame = tkinter.Frame(self.master, bg='lightblue')
         contentFrame = tkinter.Frame(self.master)
