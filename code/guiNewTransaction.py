@@ -1,5 +1,5 @@
 from main import *
-import categories, products
+import categories, products, balance
 
 
 class newTransaction:
@@ -80,9 +80,15 @@ class newTransaction:
         except:
             tkinter.messagebox.showwarning('Geen product geselecteerd','U heeft geen product geselecteerd. Selecteer een product voordat u deze toe wilt voegen aan te transactie.')
             return
+        self.resetProductSelection()
+        return value
+
+
+    def resetProductSelection(self):
+        'resets productselection'
         self.selectedProduct = None
         self.selectedProductLabel.config(text='')
-        return value
+
 
     def buildTransactionOverview(self,master):
         'Builds the overview of the current transaction'
@@ -139,10 +145,20 @@ class newTransaction:
 
     def endTransaction(self):
         'Ends the transaction and writes it to the database'
+        transaction = self.transaction
         if self.total == 0:
-            messageBox('Lege transactie', 'Dit is een lege transactie. Voeg eerst producten toe voordat u wil afrekenen!', 'info')
+            tkinter.messagebox.showinfo('Lege transactie', 'Dit is een lege transactie. Voeg eerst producten toe voordat u wil afrekenen!')
         else:
-            messageBox('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
+            tkinter.messagebox.showinfo('Betaling','U bent klaar om te betalen. Het te betalen bedrag is € {:.2f}'.format(self.total))
+            customerId = simpledialog.askstring("KlantenID", "Geef uw klantenID in")    #   To be replaced by QRcode or NFC tag scanner
+            if balance.writeNewTransaction(customerId, transaction):
+                self.numpadClear()
+                self.resetProductSelection()
+                self.transaction = []
+                self.updateTransactionListbox()
+            else:
+                tkinter.messagebox.showwarning('Waarschuwing','Er is iets missgegaan met afrekenen. Probeer het opnieuw.!')
+                return
 
     def buildNumpad(self, master):
         'Builds the numpadframe'
