@@ -15,9 +15,6 @@ def updateBalance(customerId, addition):
     conn.commit()
 
 
-
-from main import *
-
 def checkBalance(customerId):
     """Compares the balance from the customer table with the balance calculated from the transaction history"""
     balanceFromCustomer = getBalanceFromCustomer(customerId)
