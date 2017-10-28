@@ -1,5 +1,6 @@
 from main import *
 from customerFuncs import *
+from balance import *
 
 
 class customers:
@@ -104,6 +105,7 @@ class customerTable:
         for customerKey in customerDict:    # Creates Labels and buttons for all customers in the database
             cmdDelete = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.confirmUnset(master, customerList, customerKey)
             cmdTelegram = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.addTelegramId(master, customerList, customerKey)
+            cmdBalance = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.addBalance(master, customerList, customerKey)
             cmdEdit = lambda customerList = customerDict[customerKey], customerKey = customerKey: self.confirmEdit(master, customerList, customerKey)
             customerList = customerDict[customerKey]
             
@@ -133,20 +135,87 @@ class customerTable:
                     bg = 'lightgreen', 
                     command = cmdEdit).grid(column = 5, row = count)
             tkinter.Button(master, 
-                    text = "telegram",
+                    text = "telegramId",
                     height = 1, 
                     width = 15,
                     bg = 'blue',
                     fg = 'white',
                     command = cmdTelegram).grid(column = 6, row = count)
             tkinter.Button(master, 
+                    text = "voeg debit toe", 
+                    height = 1, 
+                    width = 15, 
+                    bg = 'green',
+                    fg = 'white',
+                    command = cmdBalance).grid(column = 7, row = count)
+            tkinter.Button(master, 
                     text = "verwijder klant", 
                     height = 1, 
                     width = 15, 
                     bg = 'red', 
-                    command = cmdDelete).grid(column = 7, row = count)
+                    command = cmdDelete).grid(column = 8, row = count)
             
             count += 1
+
+    def addBalance(self, master, customerList, customerKey):
+        'pops up a message, asking for a balance raise, which compells to certain requirements'
+        popup = tkinter.Toplevel()
+        popup.wm_title("Confirmation")
+        popup.geometry('500x100')
+        popup.resizable(width=False, height=False)
+
+        if customerList[2] != None:
+            text = "verhoog het saldo van klant " + customerList[0] + ' ' + customerList[2] + ' ' +customerList[1] + ' met id ' + str(customerKey)  
+        else :
+            text = "verhoog het saldo van klant " + customerList[0] + ' ' +customerList[1] + ' met id ' + str(customerKey)
+        label = tkinter.Label(popup, text = text).grid(row = 1, columnspan = 6)
+
+        balanceRaiseLabel = tkinter.Label(popup,
+                text = "paid money:",
+                height = 1,
+                width = 12).grid(row = 2, column = 0)
+        self.balanceRaiseEntry = tkinter.Entry(popup, width = 10)
+        self.balanceRaiseEntry.grid(row = 2, column = 1)
+
+        cancelButton = tkinter.Button(popup,
+                text = "annuleer",
+                height = 1,
+                width = 10,
+                command = lambda: popup.destroy()).grid(row = 2, column = 3)
+
+        confirmButton = tkinter.Button(popup,
+                text = "ok",
+                height = 1,
+                width = 10,
+                command = lambda: self.updateBalanceAndDestroy(popup, customerKey)).grid(row = 2, column = 4)
+
+    def updateBalanceAndDestroy(self, popup, customerKey):
+        'calls addBalanceRaise and closes window'
+        self.addBalanceRaise(customerKey)
+        popup.destroy()
+
+    def addBalanceRaise(self, customerKey):
+        'checks if balanceRaise is not empty then calls update balance function'
+        balanceRaise = self.balanceRaiseEntry.get()
+        if balanceRaise == '':
+            popup = tkinter.Toplevel()
+            popup.wm_title('Error')
+            popup.geometry('500x100')
+            popup.resizable(width=False, height=False)
+            tkinter.Label(popup,
+                    text = "een saldo verhoging mag niet leeg zijn",
+                    font = ('Arial', 15),
+                    height = 2,).pack()
+        else :
+            updateBalance(customerKey, balanceRaise)
+            popup = tkinter.Toplevel()
+            popup.wm_title('Succes!')
+            popup.geometry('500x100')
+            popup.resizable(width=False, height=False)
+            tkinter.Label(popup,
+                    text = "Gelukt!",
+                    font = ('Arial', 15),
+                    height = 2,).pack()
 
 
     def addTelegramId(self, master, customerList, customerKey):

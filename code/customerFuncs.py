@@ -27,6 +27,13 @@ def returnAllTelegramIds():
         returnIds.append(Ids[0])
     return returnIds
 
+def returnOneBalance(customerId):
+    'Returns balance of one customer'
+    balances = cursor.execute('SELECT balance FROM customer WHERE customerId = ?', (customerId))
+    for balance in balances:
+        balance = balance
+    return balance
+
 
 def addTelegramId(customerId, telegramId):
     'Add a customers Telegram ID to the database'
